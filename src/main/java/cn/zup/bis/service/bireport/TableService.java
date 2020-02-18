@@ -1366,7 +1366,7 @@ public class TableService extends BaseCompService {
 		}else {
 			for(int i=0;i<tableJson.getKpiJson().size();i++) {
 				String name=rsmd.getColumnName(i+tableJson.getDims().size()+1);
-				sql4.append("<th class=\"null\" colspan=\"1\"><span class=\"colkpi\"><span class=\"kpiname\" title=\"" +name+"\">"+name+"</span><a class=\"dimoptbtn set\" href=\"javascript:;\" onclick=\"setKpiInfo(this,'259');\" style=\"opacity: 0.6;\"> &nbsp; </a></span></th>");
+				sql4.append("<th class=\"null\" colspan=\"1\"><span class=\"colkpi\"><span class=\"kpiname\" title=\"" +name+"\">"+name+"</span><a class=\"dimoptbtn set\" href=\"javascript:;\" onclick=\"setKpiInfo(this,'"+tableJson.getKpiJson().get(i).getKpi_id()+"');\" style=\"opacity: 0.6;\"> &nbsp; </a></span></th>");
 //	或者	<th class="null" colspan="1"><span class="colkpi"><span class="kpiname" title="sort">sort</span><a class="dimoptbtn set" href="javascript:;" onclick="setKpiInfo(this,'259');" style="opacity: 0.6;"> &nbsp; </a></span></th>
 
 
