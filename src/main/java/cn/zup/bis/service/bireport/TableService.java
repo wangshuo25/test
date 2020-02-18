@@ -1,9 +1,11 @@
 package cn.zup.bis.service.bireport;
 
+import cn.zup.bis.dao.model.DataSourceDao;
 import cn.zup.bis.entity.bireport.DimDto;
 import cn.zup.bis.entity.bireport.KpiDto;
 import cn.zup.bis.entity.bireport.ParamDto;
 import cn.zup.bis.entity.bireport.TableQueryDto;
+import cn.zup.bis.entity.model.DataSource;
 import com.mysql.jdbc.Driver;
 import com.ruisi.ext.engine.view.context.cross.CrossReportContextImpl;
 import com.ruisi.ext.engine.view.context.dc.grid.GridDataCenterContext;
@@ -50,8 +52,9 @@ public class TableService extends BaseCompService {
 	 * 当指标有计算指标时，需要计算上期、同期等值，在显示数据时需要对偏移的数据进行过滤，
 	 */
 	private List<com.ruisi.ext.engine.view.context.dc.grid.GridFilterContext> filters = new ArrayList<com.ruisi.ext.engine.view.context.dc.grid.GridFilterContext>();
-	
 
+	@Autowired
+	private DataSourceDao mapper;
 
 	@Autowired
 	private ModelCacheService cacheService;
@@ -1335,9 +1338,12 @@ public class TableService extends BaseCompService {
 		 * 执行sql语句
 		 */
 
-		DriverManager.registerDriver(new Driver());
 
-		Connection conn = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/bi-demo?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai", "root", "123456");
+		DriverManager.registerDriver(new Driver());
+		String url=tableJson.getDsid();
+        DataSource ds=mapper.getDataSource(url);
+        System.err.println(ds.getLinkUrl());
+		Connection conn = DriverManager.getConnection(ds.getLinkUrl(),ds.getLinkName(), ds.getLinkPwd());
 
 		Statement stat = conn.createStatement();
 
