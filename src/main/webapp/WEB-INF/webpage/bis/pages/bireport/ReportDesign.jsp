@@ -41,18 +41,13 @@
 
 <script language="javascript">
 
-<%
-String pageInfo = (String)request.getAttribute("pageInfo");
-if(pageInfo == null){
-	%>
-	var pageInfo = {"selectDs":'${selectDs}',tab:"1", comps:[{"name":"表格组件","id":1, "type":"table"},{"name":"","id":2, "type":"chart",chartJson:{type:"line",params:[]},kpiJson:[]}], params:[]};
-	var isnewpage = true;
-	<%
-}else{
-%>
-	var pageInfo = <%=pageInfo%>;
-	var isnewpage = false;
-<%}%>
+
+var pageInfo = {"selectDs":'${selectDs}',tab:"1", comps:[{"name":"表格组件","id":1, "type":"table"},{"name":"","id":2, "type":"chart",chartJson:{type:"line",params:[]},kpiJson:[]}], params:[]};
+var isnewpage = true;
+
+
+
+
 var showtit = true;
 var curTmpInfo = {"menus":"${menus}"}; //临时对象
 curTmpInfo.isupdate = false; //页面是否已经修改
@@ -64,14 +59,15 @@ $(function(){
 	if(pageInfo.selectDs == ''){
 		$("#datasettree").tree("options").dnd = false;
 	}
-	
+
 	//初始化参数
-	initparam();
-	
+	//initparam();
+
 	//初始化默认组件
 	for(i=0;i<pageInfo.comps.length; i++){
 		var t = pageInfo.comps[i];
 		var str = t.type == 'text' ? t.text.replace(/\n/g,"<br>") : null;
+
 		addComp(t.id, t.name, str, false, t.type, isnewpage ? null : t);	
 	}
 	//初始化选项卡
@@ -161,11 +157,6 @@ $(function(){
 		</div>
 		
 		<div class="col-sm-9 animated fadeInRight">
-			<div class="ibox" style="border:none;">
-				<div class="ibox-content" id="p_param" style="padding:5px;">
-					<div class="ptabhelpr">拖拽维度到此处作为筛选条件</div>
-				</div>
-			</div>
 			
 					<div class="tabs-container">
 						<ul class="nav nav-tabs">
@@ -201,21 +192,21 @@ $(function(){
 
 <div id="pdailog"></div>
 <div id="kpioptmenu" class="easyui-menu">
-	<div>
-    	<span>计算</span>
-   	   <div style="width:120px;">
-    	<div onclick="kpicompute('sq')">上期值</div>
-        <div onclick="kpicompute('tq')">同期值</div>
-        <div onclick="kpicompute('zje')">增减额</div>
-        <div onclick="kpicompute('hb')">环比(%)</div>
-        <div onclick="kpicompute('tb')">同比(%)</div>
-        <div class="menu-sep"></div>
-        <div onclick="kpicompute('sxpm')">升序排名</div>
-        <div onclick="kpicompute('jxpm')">降序排名</div>
-        <div onclick="kpicompute('zb')">占比(%)</div>
-        <div onclick="kpicompute('ydpj')">移动平均</div>
-       </div>
-    </div>
+<%--	<div>--%>
+<%--    	<span>计算</span>--%>
+<%--   	   <div style="width:120px;">--%>
+<%--    	<div onclick="kpicompute('sq')">上期值</div>--%>
+<%--        <div onclick="kpicompute('tq')">同期值</div>--%>
+<%--        <div onclick="kpicompute('zje')">增减额</div>--%>
+<%--        <div onclick="kpicompute('hb')">环比(%)</div>--%>
+<%--        <div onclick="kpicompute('tb')">同比(%)</div>--%>
+<%--        <div class="menu-sep"></div>--%>
+<%--        <div onclick="kpicompute('sxpm')">升序排名</div>--%>
+<%--        <div onclick="kpicompute('jxpm')">降序排名</div>--%>
+<%--        <div onclick="kpicompute('zb')">占比(%)</div>--%>
+<%--        <div onclick="kpicompute('ydpj')">移动平均</div>--%>
+<%--       </div>--%>
+<%--    </div>--%>
 	<div onclick="kpiproperty()">属性...</div>
     <div onclick="crtChartfromTab()">图表...</div>
     <div onclick="kpiFilter('table')">筛选...</div>

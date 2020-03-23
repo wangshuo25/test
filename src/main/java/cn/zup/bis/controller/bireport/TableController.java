@@ -30,7 +30,7 @@ public class TableController extends BaseController {
 
 	@RequestMapping(value="/TableView", method = RequestMethod.POST)
 	public @ResponseBody
-    Object tableView(@RequestBody TableQueryDto tableJson, HttpServletRequest req, HttpServletResponse res) throws Exception {
+    Object tableView(@RequestBody TableQueryDto tableJson, HttpServletRequest req, HttpServletResponse res) throws Exception {//@RequestBody是作用在形参列表上，用于将前台发送过来固定格式的数据【xml格式 或者 json等】封装为对应的 JavaBean 对象，
 
 		//放入request,方便访问
 		req.setAttribute("table", tableJson);

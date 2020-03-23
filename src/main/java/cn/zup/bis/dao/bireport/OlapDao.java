@@ -1,26 +1,20 @@
 package cn.zup.bis.dao.bireport;
 
 import cn.zup.bis.entity.bireport.OlapInfo;
-import org.jeecgframework.minidao.annotation.Arguments;
-import org.jeecgframework.minidao.annotation.MiniDao;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
 
-@MiniDao
 public interface OlapDao {
-	@Arguments({"cubeId"})
-	List<Map<String, Object>> listDims(Integer cubeId);
 
-	@Arguments({"pageId"})
-    OlapInfo getOlap(Integer pageId);
+	List<Map<String, Object>> listDims(@Param("cubeId") Integer cubeId);
 
-	@Arguments({"keyword"})
-	List<OlapInfo> listreport(String keyword);
+	OlapInfo getOlap(@Param("pageId") Integer pageId);
 
+	List<OlapInfo> listreport(@Param("keyword") String keyword);
 
-	@Arguments({"pageId"})
-	void deleteOlap(Integer pageId);
+	void deleteOlap(@Param("pageId") Integer pageId);
 
 	void insertOlap(OlapInfo olap);
 
@@ -30,8 +24,7 @@ public interface OlapDao {
 
 	Integer maxOlapId();
 
-	@Arguments({"pageName"})
-	Integer olapExist(String pageName);
-	@Arguments({"cubeId"})
-	List<Map<String, Object>> listKpiDesc(Integer cubeId);
+	Integer olapExist(@Param("pageName") String pageName);
+
+	List<Map<String, Object>> listKpiDesc(@Param("cubeId") Integer cubeId);
 }

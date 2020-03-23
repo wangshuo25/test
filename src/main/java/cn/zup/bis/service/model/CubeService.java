@@ -271,7 +271,7 @@ public class CubeService {
 	public Object treeCube(Integer cubeId){
 		Map<String, Object> curGroup = null; //当前分组对象.
 		List<Map<String, Object>> ls = mapper.listDs(String.valueOf(cubeId));
-		System.err.println(ls);
+
 		for(int i=0; i<ls.size(); i++){
 			Map<String, Object> m = (Map<String, Object>)ls.get(i);
 			System.err.println(m);
@@ -405,6 +405,7 @@ public class CubeService {
 				}
 			}
 		}
+		System.err.println(ls);
 		return ls;
 	}
 }

@@ -212,7 +212,7 @@ function drillDim(compId, ts, pos, val, vdesc, oldDimId){
 		$.ajax({
 			async:false,
 			type:"POST",
-			url: curTmpInfo.qdimUrl ? curTmpInfo.qdimUrl :"queryDims.action",
+			url: curTmpInfo.qdimUrl ? curTmpInfo.qdimUrl :"/bireport/queryDims.action",
 			data:{"cubeId": comp.cubeId},
 			dataType:"json",
 			success:function(resp){

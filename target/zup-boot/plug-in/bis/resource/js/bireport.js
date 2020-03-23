@@ -28,7 +28,9 @@ function reloadDatasetTree(){
 		$('#datasettree').tree({
 			url:'rest/bis/CubeController/treeCube?cubeId=' + pageInfo.selectDs,
 			dnd:true,
-			lines:false,
+			lines:true,
+
+
 			onBeforeDrag:function(target){
 				if(!target.attributes || target.attributes.tp == 'root'){
 					return false;
@@ -40,6 +42,7 @@ function reloadDatasetTree(){
 			}
 		});
 	}
+
 }
 
 function newpage(){
@@ -56,75 +59,75 @@ function newpage(){
 		location.href = url;
 	}
 }
-function initparam(){
-	//回写参数值
-	if(pageInfo.params && pageInfo.params.length>0){
-		$("#p_param div.ptabhelpr").remove();
-		$("#p_param").append("<b>参数： </b>");
-		for(i=0; i<pageInfo.params.length; i++){
-			var obj = $("#p_param");
-			var str = "<span class=\"pppp\" id=\"pa_"+pageInfo.params[i].id+"\"><span title=\"筛选\" onclick=\"paramFilter('"+pageInfo.params[i].id+"', '"+pageInfo.params[i].type+"', '"+pageInfo.params[i].name+"')\" class=\"text\">"+pageInfo.params[i].name+"(";
-			if(pageInfo.params[i].type == 'day' || pageInfo.params[i].type == 'month'){
-				str = str + pageInfo.params[i].st + " 至 " + pageInfo.params[i].end;
-			}else{
-				str = str  + (!pageInfo.params[i].valStrs || pageInfo.params[i].valStrs == ''?"无":pageInfo.params[i].valStrs);
-			}
-			str = str + ")</span><button title=\"删除\" class=\"btn btn-default btn-xs\" onclick=\"deleteParam('"+pageInfo.params[i].id+"')\"><i class=\"fa fa-remove\"></i></button></span>";
-			obj.append(str);
-		}
-	}
-	//注册接收维度拖拽事件
-	$("#p_param").droppable({
-		accept:"#datasettree .tree-node",
-		onDragEnter:function(e,source){
-			var node = $("#datasettree").tree("getNode", source);
-			var tp = node.attributes.col_type;
-			//对维度拖拽设置图标
-			if(tp == 1 ){
-				$(source).draggable('proxy').find("span").removeClass("tree-dnd-no");
-				$(source).draggable('proxy').find("span").addClass("tree-dnd-yes");
-				$(this).css("border", "1px solid #ff0000");
-			}
-			e.cancelBubble=true;
-			e.stopPropagation(); //阻止事件冒泡
-		},
-		onDragLeave:function(e,source){
-			$(source).draggable('proxy').find("span").addClass("tree-dnd-no");
-			$(source).draggable('proxy').find("span").removeClass("tree-dnd-yes");
-			$(this).css("border", "1px solid #d3d3d3");
-			e.cancelBubble=true;
-			e.stopPropagation(); //阻止事件冒泡
-		},
-		onDrop:function(e,source){
-			e.cancelBubble=true;
-			e.stopPropagation(); //阻止事件冒泡
-			$(this).css("border", "1px solid #d3d3d3");
-			var node = $("#datasettree").tree("getNode", source);
-			var tp = node.attributes.col_type;
-			if(tp == 1){
-				if(!pageInfo.params){
-					pageInfo.params = [];
-				}
-				//判断是否存在
-				if(findParamById(node.attributes.col_id) != null){
-					msginfo("您已经添加了该参数！", "error");
-					return;
-				}
-				var id = node.attributes.col_id;
-				var p = {"id":id, "name":node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias, "tname":node.attributes.tname,"cubeId":node.attributes.cubeId,"valType":node.attributes.valType,"tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName,"calc":node.attributes.calc, "dimord":node.attributes.dimord, "grouptype":node.attributes.grouptype,"dateformat":(node.attributes.dateformat==null?"":node.attributes.dateformat),dsid:node.attributes.dsid};
-				pageInfo.params.push(p);
-				var obj = $(this);
-				obj.find("div.ptabhelpr").remove();
-				if(obj.find("b").size() == 0){
-					obj.append("<b>参数： </b>");
-				}
-				obj.append("<span class=\"pppp\" id=\"pa_"+id+"\"><span title=\"筛选\" onclick=\"paramFilter('"+id+"', '"+node.attributes.dim_type+"','"+node.text+"')\" class=\"text\">"+node.text+"(无)</span><button class=\"btn btn-default btn-xs\" title=\"删除\" onclick=\"deleteParam('"+id+"')\"><i class=\"fa fa-remove\"></i></button></span>");
-				//弹出筛选窗口
-				paramFilter(id, p.type, p.name);
-			}
-		}
-	});
-}
+// function initparam(){
+// 	//回写参数值
+// 	if(pageInfo.params && pageInfo.params.length>0){
+// 		$("#p_param div.ptabhelpr").remove();
+// 		$("#p_param").append("<b>参数： </b>");
+// 		for(i=0; i<pageInfo.params.length; i++){
+// 			var obj = $("#p_param");
+// 			var str = "<span class=\"pppp\" id=\"pa_"+pageInfo.params[i].id+"\"><span title=\"筛选\" onclick=\"paramFilter('"+pageInfo.params[i].id+"', '"+pageInfo.params[i].type+"', '"+pageInfo.params[i].name+"')\" class=\"text\">"+pageInfo.params[i].name+"(";
+// 			if(pageInfo.params[i].type == 'day' || pageInfo.params[i].type == 'month'){
+// 				str = str + pageInfo.params[i].st + " 至 " + pageInfo.params[i].end;
+// 			}else{
+// 				str = str  + (!pageInfo.params[i].valStrs || pageInfo.params[i].valStrs == ''?"无":pageInfo.params[i].valStrs);
+// 			}
+// 			str = str + ")</span><button title=\"删除\" class=\"btn btn-default btn-xs\" onclick=\"deleteParam('"+pageInfo.params[i].id+"')\"><i class=\"fa fa-remove\"></i></button></span>";
+// 			obj.append(str);
+// 		}
+// 	}
+// 	//注册接收维度拖拽事件
+// 	$("#p_param").droppable({
+// 		accept:"#datasettree .tree-node",
+// 		onDragEnter:function(e,source){
+// 			var node = $("#datasettree").tree("getNode", source);
+// 			var tp = node.attributes.col_type;
+// 			//对维度拖拽设置图标
+// 			if(tp == 1 ){
+// 				$(source).draggable('proxy').find("span").removeClass("tree-dnd-no");
+// 				$(source).draggable('proxy').find("span").addClass("tree-dnd-yes");
+// 				$(this).css("border", "1px solid #ff0000");
+// 			}
+// 			e.cancelBubble=true;
+// 			e.stopPropagation(); //阻止事件冒泡
+// 		},
+// 		onDragLeave:function(e,source){
+// 			$(source).draggable('proxy').find("span").addClass("tree-dnd-no");
+// 			$(source).draggable('proxy').find("span").removeClass("tree-dnd-yes");
+// 			$(this).css("border", "1px solid #d3d3d3");
+// 			e.cancelBubble=true;
+// 			e.stopPropagation(); //阻止事件冒泡
+// 		},
+// 		onDrop:function(e,source){
+// 			e.cancelBubble=true;
+// 			e.stopPropagation(); //阻止事件冒泡
+// 			$(this).css("border", "1px solid #d3d3d3");
+// 			var node = $("#datasettree").tree("getNode", source);
+// 			var tp = node.attributes.col_type;
+// 			if(tp == 1){
+// 				if(!pageInfo.params){
+// 					pageInfo.params = [];
+// 				}
+// 				//判断是否存在
+// 				if(findParamById(node.attributes.col_id) != null){
+// 					msginfo("您已经添加了该参数！", "error");
+// 					return;
+// 				}
+// 				var id = node.attributes.col_id;
+// 				var p = {"id":id, "name":node.text, "type":node.attributes.dim_type, "colname":node.attributes.col_name,"alias":node.attributes.alias, "tname":node.attributes.tname,"cubeId":node.attributes.cubeId,"valType":node.attributes.valType,"tableName":node.attributes.tableName, "tableColKey":node.attributes.tableColKey,"tableColName":node.attributes.tableColName,"calc":node.attributes.calc, "dimord":node.attributes.dimord, "grouptype":node.attributes.grouptype,"dateformat":(node.attributes.dateformat==null?"":node.attributes.dateformat),dsid:node.attributes.dsid};
+// 				pageInfo.params.push(p);
+// 				var obj = $(this);
+// 				obj.find("div.ptabhelpr").remove();
+// 				if(obj.find("b").size() == 0){
+// 					obj.append("<b>参数： </b>");
+// 				}
+// 				obj.append("<span class=\"pppp\" id=\"pa_"+id+"\"><span title=\"筛选\" onclick=\"paramFilter('"+id+"', '"+node.attributes.dim_type+"','"+node.text+"')\" class=\"text\">"+node.text+"(无)</span><button class=\"btn btn-default btn-xs\" title=\"删除\" onclick=\"deleteParam('"+id+"')\"><i class=\"fa fa-remove\"></i></button></span>");
+// 				//弹出筛选窗口
+// 				paramFilter(id, p.type, p.name);
+// 			}
+// 		}
+// 	});
+// }
 function paramFilter(id, type, name){
 	var param = findParamById(id);
 	$('#pdailog').dialog({
@@ -393,12 +396,13 @@ function addComp(id, name, ctx, ispush, tp, curComp){
 			ctx = crtChart(id);
 		}
 	}
-	
+
 	//是否向全局对象中添加内容
 	if(ispush == true){
 		pageInfo.comps.push({"id":id, "name":name, "type":tp});
 		curTmpInfo.isupdate= true;
 	}
+
 	var titleHTML="<div class=\"comp_table\" tp=\""+tp+"\" id=\"T"+id+"\">" +		
 			"<div class=\"ctx\">"+(ctx == null ? "" : ctx)+"</div>" +
 			"</div>";

@@ -1246,10 +1246,15 @@ public class TableService extends BaseCompService {
 	public String creattable(String sql, TableQueryDto tableJson) throws SQLException {
 
 		StringBuilder res=new StringBuilder();
-		StringBuilder sql1=new StringBuilder();//维度表头
+		StringBuilder sql1=new StringBuilder();//维度行表头
+		StringBuilder sql11=new StringBuilder();//维度列表头
+
 		StringBuilder sql4=new StringBuilder();//指标表头
-		StringBuilder sql2=new StringBuilder();//维度
+		StringBuilder sql2=new StringBuilder();//列维度
+		StringBuilder sql22=new StringBuilder();//行维度
 		StringBuilder sql3=new StringBuilder();//指标
+
+
 
 
 
@@ -1271,7 +1276,7 @@ public class TableService extends BaseCompService {
 //			</td>
 //
 //		   <td>
-//	      <div id="d_colDims" class="droppable" style="width: 155px;">
+//	         <div id="d_colDims" class="droppable" style="width: 155px;">
 //	          <div class="colDimsList">
 //	            <div style="margin:3px;color:#999999;font-size:13px;">列标签区域</div>
 //	          </div>
@@ -1342,23 +1347,146 @@ public class TableService extends BaseCompService {
 		DriverManager.registerDriver(new Driver());
 		String url=tableJson.getDsid();
         DataSource ds=mapper.getDataSource(url);
-        System.err.println(ds.getLinkUrl());
 		Connection conn = DriverManager.getConnection(ds.getLinkUrl(),ds.getLinkName(), ds.getLinkPwd());
 
 		Statement stat = conn.createStatement();
 
 		ResultSet rs =  stat.executeQuery(sql);
 		ResultSetMetaData rsmd = rs.getMetaData();
-
 		int lie=rsmd.getColumnCount();
 		/**
-		 * 获取表头（维度）
+		 * 获取列表头（维度）
 		 */
-		for(int i=0;i<tableJson.getDims().size();i++) {
-			String name=rsmd.getColumnName(i+1);
-			sql1.append("<th><span>"+name+"<a href=\"javascript:;\" onclick=\"setRdimInfo(this, &quot;"+tableJson.getDims().get(i).getId()+"&quot;, &quot;name&quot;)\" class=\"dimoptbtn set\" style=\"opacity: 0.6;\"> &nbsp; </a></span></th>");
+		for(int i=0;i<tableJson.getRows().size();i++) {
+
+			String name=tableJson.getRows().get(i).getAlias();
+			sql1.append("<th><span>"+name+"<a href=\"javascript:;\" onclick=\"setRdimInfo(this, &quot;"+tableJson.getRows().get(i).getId()+"&quot;, &quot;name&quot;)\" class=\"dimoptbtn set\" style=\"opacity: 0.6;\"> &nbsp; </a></span></th>");
 
 		}
+/**
+		 * 获取行表头（维度）
+		 */
+		for(int i=0;i<tableJson.getCols().size();i++) {
+            if (tableJson.getCols().size()==0){
+              sql11.append(" <div style=\"margin:3px;color:#999999;font-size:13px;\">列标签区域</div> ");
+			}else {
+				String name=tableJson.getCols().get(i).getAlias();
+
+				sql11.append("<span>"+name+"<a href=\"javascript:;\" onclick=\"setCdimInfo(this, &quot;"+tableJson.getCols().get(i).getId()+"&quot;, &quot;name&quot;)\" class=\"dimoptbtn set\" style=\"opacity: 0.6;\"> &nbsp; </a></span>");
+
+			}
+
+		}
+
+
+//<tr class="scrollColThead"><th class="null" colspan="1"><div class="coldim"><a class="dimDrill" onclick="drillDim(1, this, 'col', '元气森林', '元气森林', '16')" style="opacity:0.5">  </a><span class="s_colDim" title="元气森林">元气森林</span></div></th></tr>
+
+
+		List<String> r = new ArrayList<>();//保存dim行
+		int hangshu=0;
+		/**
+		 * 获取dim
+		 */
+		if (tableJson.getRows().size()==0){//若是没有列维度，就要显示拖动区域
+			sql2.append("<tr class=\"tr-row1\"><th align=\"left\" valign=\"top\" rowspan=\"1\" class=\"grid5-td\"><span class=\"s_rowDim\" title=\"合计\">合计</span></th></tr>");
+
+		} if (tableJson.getCols().size()!=0||tableJson.getRows().size()!=0){
+
+			while(rs.next()) {
+				hangshu++;
+				//dim列
+				sql2.append("<tr class=\"tr-row1\">");
+				for (int i = 0; i <tableJson.getRows().size(); i++) {
+					String dim = rs.getString(tableJson.getRows().get(i).getColname());
+					if(i==tableJson.getRows().size()-1){
+						sql2.append("<th align=\"left\" valign=\"top\" rowspan=\"1\" class=\"grid5-td\"><span class=\"s_rowDim\" title=\""+dim+"\"><a class=\"dimDrill\" onclick=\"drillDim(1, this, 'row', '"+dim+"','"+dim+"', '"+tableJson.getRows().get(i).getId()+"')\" style=\"opacity:0.5\">  </a>"+dim+"</span></th>\n");
+
+					}else {
+						sql2.append("<th align=\"left\" valign=\"top\" rowspan=\"1\" class=\"grid5-td\"><span class=\"s_rowDim\" title=\""+dim+"\"><a class=\"dimgoup\" onclick=\"goupDim(1, this, 'row','26', true)\" style=\"opacity:0.5\">  </a>"+dim+"</span></th>");
+
+					}
+
+
+
+				}
+				sql2.append("</tr>");
+
+				//dim行先存到r中
+
+				for (int i = 0; i <tableJson.getCols().size(); i++) {
+					String dim1 = rs.getString(tableJson.getCols().get(i).getColname());
+					r.add(dim1);
+					//sql22.append("<th class=\"null\" colspan=\"1\"><div class=\"coldim\"><a class=\"dimDrill\" onclick=\"drillDim(1, this, 'col', '"+dim1+"', '"+dim1+", '16')\" style=\"opacity:0.5\">  </a><span class=\"s_colDim\" title="+dim1+">"+dim1+"</span></div></th>");
+				}
+
+
+
+			}
+			//dim行  hangshu*tableJson.getCols().size()表示r中一共多少元素，i=i+tableJson.getCols().size()表示取出同一个dim的
+			for(int i=0;i<tableJson.getCols().size();i++){
+				sql22.append("<tr class=\"scrollColThead\">");
+				for(int j=i;j<hangshu*tableJson.getCols().size();j=j+tableJson.getCols().size()){
+					String dim1=r.get(j);
+					int a=tableJson.getKpiJson().size();
+					sql22.append("<th class=\"null\" colspan=\""+a+"\"><div class=\"coldim\"><a class=\"dimDrill\" onclick=\"drillDim(1, this, 'col', '"+dim1+"', '"+dim1+", '16')\" style=\"opacity:0.5\">  </a><span class=\"s_colDim\" title="+dim1+">"+dim1+"</span></div></th>");
+				}
+				sql22.append("</tr>");
+			}
+
+
+		}
+
+		rs.beforeFirst();//回到首行
+		int a=0;
+		while (rs.next()){
+			/**
+			 * 获取kpi
+			 */
+			a++;
+			sql3.append("<tr>");
+			if(tableJson.getKpiJson().size()==0&&tableJson.getCols().size()!=0){//没有指标，但是有行维和列为
+				for (int i=0;i<hangshu;i++)
+					sql3.append("<td align=\"right\" class=\"kpiData1 grid5-td\"><span class=\"kpiValue\">-</span></td>");
+			}else if (tableJson.getKpiJson().size()!=0&&tableJson.getCols().size()==0){//只有列维，且有指标
+				for (int j = 0; j <tableJson.getKpiJson().size(); j++) {
+					String kpi = rs.getString(j+tableJson.getDims().size()+1);
+					sql3.append("<td align=\"right\" class=\"kpiData1 grid5-td\"><span class=\"kpiValue\">"+kpi+"</a></span></td>");
+				}
+			}else if(tableJson.getKpiJson().size()==0&&tableJson.getCols().size()!=0){//只有行维，且有指标
+
+
+			} else {
+				for(int i=1;i<=hangshu*tableJson.getKpiJson().size();i++){
+					if(i==(a-1)*tableJson.getKpiJson().size()+1){
+						for (int j = 0; j <tableJson.getKpiJson().size(); j++) {
+						    String kpi = rs.getString(j+tableJson.getDims().size()+1);
+							sql3.append("<td align=\"right\" class=\"kpiData1 grid5-td\"><span class=\"kpiValue\">"+kpi+"</a></span></td>");
+						}
+						i=(a-1)*tableJson.getKpiJson().size()+1;
+					}else {
+						sql3.append("<td align=\"right\" class=\"kpiData1 grid5-td\"><span class=\"kpiValue\">-</span></td>");
+					}
+
+				}
+
+//				for (int j = 0; j <tableJson.getKpiJson().size(); j++) {
+//					String kpi = rs.getString(j+tableJson.getDims().size()+1);
+//					for(int i=1;i<=hangshu;i++){
+//						if (i<=a*tableJson.getKpiJson().size()&&i>=(a-1)*tableJson.getKpiJson().size()+1){
+//							sql3.append("<td align=\"right\" class=\"kpiData1 grid5-td\"><span class=\"kpiValue\">"+kpi+"</a></span></td>");
+//
+//						}else {
+//							sql3.append("<td align=\"right\" class=\"kpiData1 grid5-td\"><span class=\"kpiValue\">-</span></td>");
+//						}
+//					}
+//
+//				}
+			}
+			sql3.append("</tr>");
+		}
+
+
+
 		/**
 		 * 获取表头（指标）
 		 */
@@ -1369,39 +1497,28 @@ public class TableService extends BaseCompService {
 					"</span>\n" +
 					"</span>\n" +
 					"</th>");
-		}else {
-			for(int i=0;i<tableJson.getKpiJson().size();i++) {
-				String name=rsmd.getColumnName(i+tableJson.getDims().size()+1);
-				sql4.append("<th class=\"null\" colspan=\"1\"><span class=\"colkpi\"><span class=\"kpiname\" title=\"" +name+"\">"+name+"</span><a class=\"dimoptbtn set\" href=\"javascript:;\" onclick=\"setKpiInfo(this,'"+tableJson.getKpiJson().get(i).getKpi_id()+"');\" style=\"opacity: 0.6;\"> &nbsp; </a></span></th>");
+		}else if(tableJson.getCols().size()==0){
+			sql4.append("<tr class=\"scrollColThead\">");
+			for (int j=0;j<tableJson.getKpiJson().size();j++){
+				String name=rsmd.getColumnName(j+tableJson.getDims().size()+1);
+				sql4.append("<th class=\"null\" colspan=\"1\"><span class=\"colkpi\"><span class=\"kpiname\" title=\"" +name+"\">"+name+"</span><a class=\"dimoptbtn set\" href=\"javascript:;\" onclick=\"setKpiInfo(this,'"+tableJson.getKpiJson().get(j).getKpi_id()+"');\" style=\"opacity: 0.6;\"> &nbsp; </a></span></th>");
+
+			}
+			sql4.append("</tr>");
+		} else {
+			sql4.append("<tr class=\"scrollColThead\">");
+			for(int i=0;i<hangshu;i++) {
+				for (int j=0;j<tableJson.getKpiJson().size();j++){
+					String name=rsmd.getColumnName(j+tableJson.getDims().size()+1);
+					sql4.append("<th class=\"null\" colspan=\"1\"><span class=\"colkpi\"><span class=\"kpiname\" title=\"" +name+"\">"+name+"</span><a class=\"dimoptbtn set\" href=\"javascript:;\" onclick=\"setKpiInfo(this,'"+tableJson.getKpiJson().get(j).getKpi_id()+"');\" style=\"opacity: 0.6;\"> &nbsp; </a></span></th>");
+
+				}
 //	或者	<th class="null" colspan="1"><span class="colkpi"><span class="kpiname" title="sort">sort</span><a class="dimoptbtn set" href="javascript:;" onclick="setKpiInfo(this,'259');" style="opacity: 0.6;"> &nbsp; </a></span></th>
 
 
 			}
-		}
 
-
-		int hangshu=0;
-		/**
-		 * 获取dim 和 kpi
-		 */
-		while(rs.next()) {
-			hangshu++;
-			sql2.append("<tr class=\"tr-row1\">");
-			for (int i = 0; i <tableJson.getDims().size(); i++) {
-				String dim = rs.getString(i+1);
-				sql2.append("<th align=\"left\" valign=\"top\" rowspan=\"1\" class=\"grid5-td\"><span class=\"s_rowDim\" title=\""+dim+"\"><a class=\"dimgoup\" onclick=\"goupDim(1, this, 'row','26', true)\" style=\"opacity:0.5\">  </a>"+dim+"</span></th>");
-
-			}
-			sql2.append("</tr>");
-
-			sql3.append("<tr>");
-			for (int j = 0; j <tableJson.getKpiJson().size(); j++) {
-				String kpi = rs.getString(j+tableJson.getDims().size()+1);
-				System.err.println(kpi);
-				sql3.append("<td align=\"right\" class=\"kpiData1 grid5-td\"><span class=\"kpiValue\">"+kpi+"</a></span></td>");
-
-			}
-			sql3.append("</tr>");
+			sql4.append("</tr>");
 		}
 //		            <tr><td align="right" class="kpiData1 grid5-td"><span class="kpiValue"><div style="height:70px;margin-top:10px;"><a href="javascript:linkdetail({&quot;logo&quot;:&quot;http://39.98.239.6:8080/file/20190601/img_486529c5564c46a79a4baba9a6def7c7_webwxgetmsgimg (6).jpg&quot;,&quot;name&quot;:&quot;元气森林&quot;});">12.0</a></div></span></td>
 //		                 <td align="right" class="kpiData1 grid5-td"><span class="kpiValue"><div style="height:70px;margin-top:10px;"><a href="javascript:linkdetail({&quot;logo&quot;:&quot;http://39.98.239.6:8080/file/20190601/img_486529c5564c46a79a4baba9a6def7c7_webwxgetmsgimg (6).jpg&quot;,&quot;name&quot;:&quot;元气森林&quot;});">-</a></div></span></td></tr>
@@ -1409,7 +1526,7 @@ public class TableService extends BaseCompService {
 //<tr class="tr-row1"><th align="left" valign="top" rowspan="1" class="grid5-td"><span class="s_rowDim" title="元气森林"><a class="dimgoup" onclick="goupDim(1, this, 'row','26', true)" style="opacity:0.5">  </a>元气森林</span></th>
 //	                <th align="left" valign="top" rowspan="1" class="grid5-td"><span class="s_rowDim" style="height:80px;" title="http://39.98.239.6:8080/file/20190601/img_486529c5564c46a79a4baba9a6def7c7_webwxgetmsgimg (6).jpg"><a class="dimDrill" onclick="drillDim(1, this, 'row', 'http://39.98.239.6:8080/file/20190601/img_486529c5564c46a79a4baba9a6def7c7_webwxgetmsgimg (6).jpg','http://39.98.239.6:8080/file/20190601/img_486529c5564c46a79a4baba9a6def7c7_webwxgetmsgimg (6).jpg', '27')" style="opacity:0.5">  </a>http://39.98.2<br>39.6:8080/file<br>/20190601/img_<br>486529c5564c46<br>a79a4baba9a6def7c7_webwxgetmsgimg (6).jpg</span></th></tr>
 		/**
-		 * 维度的表头
+		 * 维度的列表头
 		 */
 		res.append("<div class=\"mv_main mv_main2\" id=\"mv.tmp.table\">\n" +
 				" <div class=\"crossReport\">\n" +
@@ -1424,7 +1541,7 @@ public class TableService extends BaseCompService {
 		res.append(sql1);
 
 		/**
-		* 指标的表头
+		* 维度的行表头
 		*/
 		res.append("\t                   </tr>\n" +
 				"\t                </tbody>\n" +
@@ -1434,12 +1551,20 @@ public class TableService extends BaseCompService {
 				"\n" +
 				"\t\t <td>\n" +
 				"\t      <div id=\"d_colDims\" class=\"droppable\" style=\"width: 155px;\">\n" +
-				"\t          <div class=\"colDimsList\">\n" +
-				"\t            <div style=\"margin:3px;color:#999999;font-size:13px;\">列标签区域</div>\n" +
-				"\t          </div>\n" +
+				"\t          <div class=\"colDimsList\">\n");
+		res.append(sql11);
+	    res.append(				"\t          </div>\n" +
 				"              <table class=\"grid5\" cellpadding=\"0\" cellspacing=\"0\">\n" +
-				"                <tbody><tr class=\"scrollColThead\">");
+				"                <tbody>");
 
+		/**
+		 * 行维度值
+		 */
+
+        res.append(sql22);
+		/**
+		 * kpi头
+		 */
         res.append(sql4);
 
 		res.append("\t             </tbody>\n" +
@@ -1468,7 +1593,7 @@ public class TableService extends BaseCompService {
 		 * kpi
 		 */
         res.append("<td valign=\"top\">\n" +
-				"\t\t   <div id=\"d_kpi\" class=\"droppable\" style=\"width: 221px; height: 577px;\">\n" +
+				"\t\t   <div id=\"d_kpi\" class=\"droppable\" style=\"width: 3000px; height: 577px;\">\n" +
 				"            <table class=\"grid5\" cellpadding=\"0\" cellspacing=\"0\">\n" +
 				"                  <tbody>");
         res.append(sql3);
@@ -1517,12 +1642,12 @@ public class TableService extends BaseCompService {
 		}
 
 
-
-		System.out.println(tableJson.getCols().size());
-		System.out.println(tableJson.getRows().size());
-		System.out.println(tableJson.getDims().size());
-		System.out.println(tableJson.getKpiJson().size());
-
+//
+//		System.out.println(tableJson.getCols().size());
+//		System.out.println(tableJson.getRows().size());
+//		System.out.println(tableJson.getDims().size());
+//		System.out.println(tableJson.getKpiJson().size());
+//
 
 
 

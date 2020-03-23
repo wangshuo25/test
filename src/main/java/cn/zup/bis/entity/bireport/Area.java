@@ -3,7 +3,7 @@ package cn.zup.bis.entity.bireport;
 import cn.zup.bis.entity.common.BaseEntity;
 
 public class Area extends BaseEntity {
-	
+
 	private Integer id;
 	private String code;
 	private String provName;
@@ -32,9 +32,9 @@ public class Area extends BaseEntity {
 	public void setCityName(String cityName) {
 		this.cityName = cityName;
 	}
-	
+
 	@Override
 	public void validate() {
-		
+
 	}
 }

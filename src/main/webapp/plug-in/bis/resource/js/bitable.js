@@ -14,9 +14,10 @@ function crtCrossTable(){
 注册行列维度、度量区域的拖拽事件
 对应表格组件的事件
 **/
+
 function initDropDiv(id){
 	var ischg = false;
-	$("#T" + id + " #d_colDims, #T" + id +" #d_rowDims, #T"+id+" #d_kpi").droppable({
+	$(" #d_colDims," +" #d_rowDims,"+" #d_kpi").droppable({
 		accept:"ul.tableTreeCss .tree-node",
 		onDragEnter:function(e,source){
 			var node = $("#datasettree").tree("getNode", source);
@@ -54,20 +55,20 @@ function initDropDiv(id){
 		},
 		onDragLeave:function(e,source){
 			
-			if($(this).attr("id") == 'd_kpi' && ischg == true){
-			}else{
+
 				$(source).draggable('proxy').find("span").addClass("tree-dnd-no");
 				$(source).draggable('proxy').find("span").removeClass("tree-dnd-yes");
 				
-				$("#T"+id+" #" + $(this).attr("id")).css("border", "none");
-			}
+				$(" #" + $(this).attr("id")).css("border", "none");
+
 			e.cancelBubble=true;
 			e.stopPropagation(); //阻止事件冒泡
 		},
 		onDrop:function(e,source){
 			var id = $(this).parents(".comp_table").attr("id").replace("T","");
+
 			var json = findCompById(Number(id));
-			
+
 			e.cancelBubble=true;
 			e.stopPropagation(); //阻止事件冒泡
 			
@@ -167,6 +168,8 @@ function fireTableScroll(id){
 		//$("#T"+id+" #d_rowDims").scrollTop(top);
 		var left = $(this).scrollLeft();
 		$("#T"+id+" #d_colDims table").css("margin-left", "-"+left+"px");
+
+
 	});
 	var comp = findCompById(id);
 	var rowLvl = comp.rows?comp.rows.length:1;
