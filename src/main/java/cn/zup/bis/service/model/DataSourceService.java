@@ -4,12 +4,9 @@ import cn.zup.bis.dao.model.DataSourceDao;
 import cn.zup.bis.entity.model.DataSource;
 import cn.zup.bis.entity.RequestStatus;
 import cn.zup.bis.entity.Result;
-import cn.zup.bis.service.bireport.ModelCacheService;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -18,7 +15,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+/*
+@Service告诉spring创建一个实现类的实例 spring容器要为他创建对象\
 
+
+ */
 @Service("DataSourceService")
 public class DataSourceService {
 	/**
@@ -39,14 +40,10 @@ public class DataSourceService {
 	public static final String showTables_hive = "show tables";
 	public static final String showTables_kylin = "show tables";
 	**/
-	
-	private Logger log = Logger.getLogger(DataSourceService.class);
-	
-	@Autowired
+
+	@Resource
 	private DataSourceDao mapper;
-	
-	@Autowired
-	private ModelCacheService cacheService;
+
 	
 	public List<DataSource> listDataSource(){
 		return mapper.listDataSource();
@@ -58,14 +55,14 @@ public class DataSourceService {
 	
 	public void updateDataSource(DataSource ds){
 		mapper.updateDataSource(ds);
-		//清除缓存
-		this.cacheService.removeDsource(ds.getDsid());
+//		//清除缓存
+//		this.cacheService.removeDsource(ds.getDsid());
 	}
 	
 	public void deleteDataSource(String dsid){
 		mapper.deleteDataSource(dsid);
-		//清除缓存
-		this.cacheService.removeDsource(dsid);
+//		//清除缓存
+//		this.cacheService.removeDsource(dsid);
 	}
 	
 	public DataSource getDataSource(String dsid){
@@ -77,7 +74,7 @@ public class DataSourceService {
 	public Connection getJDBC(DataSource ds) throws Exception{
 		try {
 			Connection conn = null;
-			Class.forName(ds.getClazz()).newInstance();
+		Class.forName("org.apache.kylin.jdbc.Driver").newInstance();
 			conn= DriverManager.getConnection(ds.getLinkUrl(), ds.getLinkName(), ds.getLinkPwd());
 			return conn;
 		} catch (Exception e) {
@@ -87,14 +84,21 @@ public class DataSourceService {
 
 
 
-	public Result testDataSource(DataSource ds)  {
+	public Result testDataSource(DataSource ds) {
 		Result ret = new Result();
-		String clazz = ds.getClazz();
+		String clazz ="";
+		if("mysql".equals(ds.getLinkType())) {
+			clazz="com.mysql.cj.jdbc.Driver";
 
+		}else if("kylin".equals(ds.getLinkType())){
+			clazz="org.apache.kylin.jdbc.Driver";
+		}
 		Connection conn = null;
+
 		try {
 			Class.forName(clazz).newInstance();
-			System.err.println(ds.getLinkUrl());
+			System.err.println(clazz);
+
 
 			conn= DriverManager.getConnection(ds.getLinkUrl(), ds.getLinkName(),  ds.getLinkPwd());
 			if(conn != null){
@@ -103,7 +107,7 @@ public class DataSourceService {
 				ret.setResult(RequestStatus.FAIL_FIELD.getStatus());
 			}
 		} catch (Exception e) {
-			log.error("JDBC测试出错。", e);
+
 			ret.setResult(RequestStatus.FAIL_FIELD.getStatus());
 			ret.setMsg(e.getMessage());
 		}finally{
@@ -111,7 +115,7 @@ public class DataSourceService {
 				try {
 					conn.close();
 				} catch (SQLException e) {
-					e.printStackTrace();
+					e.printStackTrace();//打印错误信息在控制台
 				}
 			}
 		}
@@ -127,30 +131,18 @@ public class DataSourceService {
 				conn = this.getJDBC(ds);
 			}
 			String schem = null;
-			if("oracle".equals(ds.getLinkType())){
-				schem = ds.getLinkName().toUpperCase();
-			}
-			if("postgresql".equals(ds.getLinkType())) {
-				if (ds.getLinkUrl().toLowerCase().indexOf("schema") > 0) {
-					String currentSchema = ds.getLinkUrl().toLowerCase().substring(ds.getLinkUrl().toLowerCase().lastIndexOf("schema"));
-					int start = currentSchema.indexOf("=");
-					int end = currentSchema.indexOf("&");
-					schem = currentSchema.substring(start + 1,end > 0 ? end : currentSchema.length());
-				}
-			}
+
 			String catalog = null;
 			if("mysql".equals(ds.getLinkType())) {
-				catalog = conn.getCatalog();
+				catalog = conn.getCatalog();//catalog为数据源
 			}
 
 
-			ResultSet tbs = conn.getMetaData().getTables(catalog, schem, (searchTname!=null&&searchTname.length() > 0) ?("%"+searchTname+"%"):"%", new String[]{"TABLE","VIEW"});
+//(searchTname!=null&&searchTname.length() > 0) ?("%"+searchTname+"%"):"%"
+			ResultSet tbs = conn.getMetaData().getTables(catalog, schem,searchTname , new String[]{"TABLE"});//（数据库名，默认，表名，默认）
 			while(tbs.next()){
 				Map<String, Object> m = new HashMap<String, Object>();
 				String tname = tbs.getString("TABLE_NAME");
-				if (StringUtils.isNotBlank(schem)) {
-					tname = schem + "." + tname;
-				}
 				m.put("id", tname);
 				m.put("text", tname);
 				m.put("iconCls", "icon-table");

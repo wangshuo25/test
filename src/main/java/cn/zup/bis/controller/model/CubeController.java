@@ -1,7 +1,6 @@
 package cn.zup.bis.controller.model;
 
 import cn.zup.bis.entity.model.Cube;
-import cn.zup.bis.entity.PageParam;
 import cn.zup.bis.entity.Result;
 import cn.zup.bis.service.model.CubeService;
 import cn.zup.bis.util.BaseController;
@@ -21,18 +20,18 @@ public class CubeController extends BaseController {
 	
 	@RequestMapping(value="/listCube")
 	public @ResponseBody
-    Object list(){
-		return service.listCube(null);
+    Object list(String key){
+		return service.listCube(key);
 	}
-	
-	@RequestMapping(value="/pageCube")
-	public @ResponseBody
-    Object page(String key, PageParam page){
-		PageHelper.startPage(page.getPage(), page.getRows());
-		List<Cube> ls = service.listCube(key);
-		PageInfo<Cube> pageInfo=new PageInfo<Cube>(ls);
-		return super.buildSucces(pageInfo);
-	}
+//
+//	@RequestMapping(value="/pageCube")
+//	public @ResponseBody
+//    Object page(String key, PageParam page){
+//		PageHelper.startPage(page.getPage(), page.getRows());
+//		List<Cube> ls = service.listCube(key);
+//		PageInfo<Cube> pageInfo=new PageInfo<Cube>(ls);
+//		return super.buildSucces(pageInfo);//记得看看一下
+//	}
 
 	@RequestMapping(value="/saveCube", method = RequestMethod.POST)
 	public @ResponseBody

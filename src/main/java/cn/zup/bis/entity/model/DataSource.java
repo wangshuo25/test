@@ -2,18 +2,14 @@
 
 package cn.zup.bis.entity.model;
 
-
-import java.io.Serializable;
-
-
-public class DataSource implements Serializable {
+public class DataSource  {
 	private String linkType;
 	private String linkName;
 	private String linkPwd;
 	private String linkUrl;
 	private String dsname;
 	private String jndiName;
-	private String use; //使用jdbc/jndi
+	private String use; //使用jdbc
 	private String dsid;
 
 	public String getLinkType() {

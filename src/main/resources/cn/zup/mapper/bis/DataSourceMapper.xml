@@ -4,7 +4,6 @@
     
     <resultMap id="BaseResultMap" type="cn.zup.bis.entity.model.DataSource">
 		<id column="ds_id" property="dsid"/>
-		<result column="menu_pid" property="menuPid"/>
 		<result column="name" property="dsname"/>
 		<result column="jndi_name" property="jndiName"/>
 		<result column="use_type" property="use"/>

@@ -29,4 +29,6 @@ public interface CubeDao {
 	List<Map<String, Object>> listCubeMeta(@Param("cubeId") Integer cubeId);
 	
 	List<Map<String, Object>> listDs(@Param("selectDsIds") String selectDsIds);
+
+	List<Map<String, Object>> listDims(@Param("cubeId") Integer cubeId);
 }

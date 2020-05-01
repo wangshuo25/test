@@ -1,7 +1,6 @@
 package cn.zup.bis.util;
 
-import com.ruisi.ext.engine.view.context.ExtContext;
-import com.ruisi.ext.runtime.tag.CalendarTag;
+
 import net.sf.json.JSONObject;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -67,13 +66,7 @@ public final class RSBIUtils {
 	 * 获取ext-config中配置的变量。
 	 * @return
 	 */
-	public static String getConstant(String name){
-		return ExtContext.getInstance().getConstant(name);
-	}
-	public static String getUUIDStr(){
-		return UUID.randomUUID().toString().replace("-","");
-	}
-	
+
 	public static String dealStringParam(String vals){
 		String[] vls = vals.split(",");
 		StringBuffer sb = new StringBuffer();
@@ -132,91 +125,75 @@ public final class RSBIUtils {
          }
 	}
 
-	
-	/**
-	 * 生成导出html
-	 * @param body
-	 * @param host
-	 * @param type 表示使用的类型，是 olap表示多维分析的导出， report 表示报表的导出
-	 * @return
-	 */
-	public static String htmlPage(String body, String host, String type){
-		StringBuffer sb = new StringBuffer();
-		
-		sb.append("<!DOCTYPE html>");
-		sb.append("<html lang=\"en\">");
-		sb.append("<head>");
-		sb.append("<title>睿思BI</title>");
-		sb.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0\">");
-		sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">");
-		sb.append("<script type=\"text/javascript\" src=\""+host+"/ext-res/js/jquery.min.js\"></script>");
-		sb.append("<script type=\"text/javascript\" src=\""+host+"/ext-res/js/ext-base.js\"></script>");
-		sb.append("<script type=\"text/javascript\" src=\""+host+"/ext-res/js/echarts.min.js\"></script>");
-		sb.append("<script type=\"text/javascript\" src=\""+host+"/ext-res/js/sortabletable.js\"></script>");
-		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/ext-res/css/bootstrap.min.css\" />");
-		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/css/animate.css\" />");
-		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/css/style.css\" />");
-		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/css/font-awesome.css?v=4.4.0\" />");
-		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/jquery-easyui-1.4.4/themes/gray/easyui.css\">");
-		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/jquery-easyui-1.4.4/themes/icon.css\">");
-		sb.append("<script type=\"text/javascript\" src=\""+host+"/resource/jquery-easyui-1.4.4/jquery.easyui.min.js\"></script>");
-		sb.append("</head>");
-		sb.append("<style>");
-		sb.append("table.r_layout {table-layout:fixed;width:100%;}");
-		sb.append("table.r_layout td.layouttd {padding:10px;}");
-		sb.append(".inputform2 {width:120px;}");
-		sb.append(".inputtext {width:90px;}");
-		sb.append("</style>");
-		sb.append("<body class=\"gray-bg\">");
-	
-		sb.append(body);
-		
-		sb.append("</body>");
-		sb.append("</html>");
-		
-		return sb.toString();
-	}
-	
-	public static boolean exist(String id, String[] ids){
-		boolean exist = false;
-		for(String tid : ids){
-			if(tid.equals(id)){
-				exist = true;
-				break;
-			}
-		}
-		return exist;
-	}
-	
-	public static String getFestival(Object key, HttpServletRequest req){
-		String df = (String)req.getAttribute("dateformat");
-		String ret = CalendarTag.getFestival((String)key, df);
-		return ret;
-	}
-	
-	/**
-	 * 将容易引起xss漏洞的半角字符直接替换成全角字符 在保证不删除数据的情况下保存 
-	 * @param str
-	 * @return
-	 */
-	public static String htmlEscape(String value){
-		if(value == null || value.length() == 0){
-			return value;
-		}
-		value = value.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-        value = value.replaceAll("\\(", "&#40;").replaceAll("\\)", "&#41;");
-        value = value.replaceAll("'", "&#39;");
-        value = value.replaceAll("eval\\((.*)\\)", "");
-        value = value.replaceAll("[\\\"\\\'][\\s]*javascript:(.*)[\\\"\\\']", "\"\"");
-        value = value.replaceAll("script", "");
-        return value;
-	}
-	
-	 /**
-     * Escape解码
-     * @param src 加盐字符串
-     * @return 明文
-     */
+//
+//	/**
+//	 * 生成导出html
+//	 * @param body
+//	 * @param host
+//	 * @param type 表示使用的类型，是 olap表示多维分析的导出， report 表示报表的导出
+//	 * @return
+//	 */
+//	public static String htmlPage(String body, String host, String type){
+//		StringBuffer sb = new StringBuffer();
+//
+//		sb.append("<!DOCTYPE html>");
+//		sb.append("<html lang=\"en\">");
+//		sb.append("<head>");
+//		sb.append("<title>睿思BI</title>");
+//		sb.append("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0\">");
+//		sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">");
+//		sb.append("<script type=\"text/javascript\" src=\""+host+"/ext-res/js/jquery.min.js\"></script>");
+//		sb.append("<script type=\"text/javascript\" src=\""+host+"/ext-res/js/ext-base.js\"></script>");
+//		sb.append("<script type=\"text/javascript\" src=\""+host+"/ext-res/js/echarts.min.js\"></script>");
+//		sb.append("<script type=\"text/javascript\" src=\""+host+"/ext-res/js/sortabletable.js\"></script>");
+//		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/ext-res/css/bootstrap.min.css\" />");
+//		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/css/animate.css\" />");
+//		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/css/style.css\" />");
+//		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/css/font-awesome.css?v=4.4.0\" />");
+//		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/jquery-easyui-1.4.4/themes/gray/easyui.css\">");
+//		sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\""+host+"/resource/jquery-easyui-1.4.4/themes/icon.css\">");
+//		sb.append("<script type=\"text/javascript\" src=\""+host+"/resource/jquery-easyui-1.4.4/jquery.easyui.min.js\"></script>");
+//		sb.append("</head>");
+//		sb.append("<style>");
+//		sb.append("table.r_layout {table-layout:fixed;width:100%;}");
+//		sb.append("table.r_layout td.layouttd {padding:10px;}");
+//		sb.append(".inputform2 {width:120px;}");
+//		sb.append(".inputtext {width:90px;}");
+//		sb.append("</style>");
+//		sb.append("<body class=\"gray-bg\">");
+//
+//		sb.append(body);
+//
+//		sb.append("</body>");
+//		sb.append("</html>");
+//
+//		return sb.toString();
+//	}
+//
+//	public static boolean exist(String id, String[] ids){
+//		boolean exist = false;
+//		for(String tid : ids){
+//			if(tid.equals(id)){
+//				exist = true;
+//				break;
+//			}
+//		}
+//		return exist;
+//	}
+//
+//
+//	/**
+//	 * 将容易引起xss漏洞的半角字符直接替换成全角字符 在保证不删除数据的情况下保存
+//	 * @param str
+//	 * @return
+//	 */
+//
+//
+//	 /**
+//     * Escape解码
+//     * @param src 加盐字符串
+//     * @return 明文
+//     */
     public static String unescape(String src) {
         StringBuffer tmp = new StringBuffer();
         tmp.ensureCapacity(src.length());

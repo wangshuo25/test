@@ -3,7 +3,6 @@ package cn.zup.bis.controller.model;
 import cn.zup.bis.entity.model.DataSource;
 import cn.zup.bis.service.model.DataSourceService;
 import cn.zup.bis.util.BaseController;
-import com.ruisi.ext.engine.view.exception.ExtConfigException;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -11,6 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import java.util.List;
+
+/*
+@responseBody注解的作用是将controller的方法返回的对象通过适当的转换器转换为指定的格式之后，写入到response对象的body区，通常用来返回JSON数据或者是XML数据。
+@RestController等同于@Controller + @ResponseBody。可以删掉@ResponseBody
+@RequestMapping注解是用来映射请求的，即指明处理器可以处理哪些URL请求，该注解既可以用在类上，也可以用在方法上。
+@Resource 依赖注入
+
+*/
+
+
 
 @RestController
 @RequestMapping(value = "/rest/bis/DataSourceController")
@@ -21,11 +30,8 @@ public class DataSourceController extends BaseController {
 
 	@RequestMapping(value="/listDataSource")
 	public @ResponseBody
-    Object list() throws ExtConfigException {
-		System.err.println("43242");
+    Object list() {
 		List<DataSource> list = dsService.listDataSource();
-
-
 		return list;
 	}
 
@@ -36,26 +42,26 @@ public class DataSourceController extends BaseController {
 	}
 
 	@RequestMapping(value="/deleteDataSource")
-	public @ResponseBody
+	public
     Object delete(String dsid){
 		dsService.deleteDataSource(dsid);
 		return this.buildSucces();
 	}
-	@RequestMapping(value="/testDataSource", method = RequestMethod.POST)
-	public @ResponseBody
+	@RequestMapping(value="/testDataSource")
+	public
     Object test(DataSource ds)  {
 		ds.setUse("jdbc");
 		return dsService.testDataSource(ds);
 	}
 
-	@RequestMapping(value="/saveDataSource", method = RequestMethod.POST)
-	public @ResponseBody
+	@RequestMapping(value="/saveDataSource")
+	public
     Object save(DataSource ds){
 		dsService.insertDataSource(ds);
 		return this.buildSucces();
 	}
 
-	@RequestMapping(value="/updateDataSource", method = RequestMethod.POST)
+	@RequestMapping(value="/updateDataSource")
 	public @ResponseBody
     Object update(DataSource ds){
 		dsService.updateDataSource(ds);

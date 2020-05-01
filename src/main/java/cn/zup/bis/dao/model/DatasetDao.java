@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface DatasetDao {
 
-	List<Dataset> listDataset();
+	List<Dataset> listDataset(@Param("keyword") String keyword);
 	
 	void updateDset(Dataset ds);
 	

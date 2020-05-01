@@ -4,12 +4,13 @@ public class DSColumn {
 	private Integer idx;
 	private String name;
 	private String type;
-	private String dispName;
-	private Integer length; //字段长度
 	private String tname; 
 	private Boolean isshow = true; //是否显示字段
-	private String expression;
-	
+	private Integer length; //字段长度
+	//	private String dispName;
+	//private String expression;
+
+
 	public String getName() {
 		return name;
 	}
@@ -22,12 +23,19 @@ public class DSColumn {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public String getDispName() {
-		return dispName;
-	}
-	public void setDispName(String dispName) {
-		this.dispName = dispName;
-	}
+//	public String getDispName() {
+//		return dispName;
+//	}
+//	public void setDispName(String dispName) {
+//		this.dispName = dispName;
+//	}
+
+//	public String getExpression() {
+//		return expression;
+//	}
+//	public void setExpression(String expression) {
+//		this.expression = expression;
+//	}
 	public String getTname() {
 		return tname;
 	}
@@ -46,17 +54,11 @@ public class DSColumn {
 	public void setIsshow(Boolean isshow) {
 		this.isshow = isshow;
 	}
+
 	public Integer getLength() {
 		return length;
 	}
 	public void setLength(Integer length) {
 		this.length = length;
 	}
-	public String getExpression() {
-		return expression;
-	}
-	public void setExpression(String expression) {
-		this.expression = expression;
-	}
-	
 }

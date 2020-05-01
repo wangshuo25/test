@@ -52,30 +52,30 @@ function msginfo(input, tp){
         }
     });
 }
-//在textarea光标处插入文本
-function insertText2focus(obj,str) {
-    str = str　+ " ";
-    obj.focus();
-    if (document.selection) {
-        var sel = document.selection.createRange();
-        sel.text = str;
-    } else if (typeof obj.selectionStart == 'number' && typeof obj.selectionEnd == 'number') {
-        var startPos = obj.selectionStart,
-            endPos = obj.selectionEnd,
-            cursorPos = startPos,
-            tmpStr = obj.value;
-        obj.value = tmpStr.substring(0, startPos) + "" + str + tmpStr.substring(endPos, tmpStr.length);
-        cursorPos += str.length;
-        obj.selectionStart = obj.selectionEnd = cursorPos;
-    } else {
-        obj.value += str;
-    }
-}
-function ischinese(a){
-    if (/[\u4E00-\u9FA5]/i.test(a)) {
-        return true;
-    }else{    return false }
-}
+// //在textarea光标处插入文本
+// function insertText2focus(obj,str) {
+//     str = str　+ " ";
+//     obj.focus();
+//     if (document.selection) {
+//         var sel = document.selection.createRange();
+//         sel.text = str;
+//     } else if (typeof obj.selectionStart == 'number' && typeof obj.selectionEnd == 'number') {
+//         var startPos = obj.selectionStart,
+//             endPos = obj.selectionEnd,
+//             cursorPos = startPos,
+//             tmpStr = obj.value;
+//         obj.value = tmpStr.substring(0, startPos) + "" + str + tmpStr.substring(endPos, tmpStr.length);
+//         cursorPos += str.length;
+//         obj.selectionStart = obj.selectionEnd = cursorPos;
+//     } else {
+//         obj.value += str;
+//     }
+// }
+// function ischinese(a){
+//     if (/[\u4E00-\u9FA5]/i.test(a)) {
+//         return true;
+//     }else{    return false }
+// }
 //生成唯一标识
 function newGuid()
 {

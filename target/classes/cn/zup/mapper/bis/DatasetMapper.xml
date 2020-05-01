@@ -13,12 +13,14 @@
 		<result column="useType" property="useType"/>
     </resultMap>
     
-   <select id="listDataset" resultMap="BaseResultMap">
-   		select a.dset_id, a.ds_id, a.name, a.crtdate, 
+   <select id="listDataset" resultMap="BaseResultMap"  parameterType="java.lang.String">
+   		select a.dset_id, a.ds_id, a.name, a.crtdate, a.cfg,
 		a.primary_table, b.name "dsname", use_type "useType"
 		from etl_dataset a, etl_datasource b
 		where a.ds_id = b.ds_id
-		order by crtdate desc
+       <if test="keyword != null and keyword != ''">
+           and a.dset_id like '%${keyword}%'
+       </if>
    </select>
    
    <insert id="insertDset" parameterType="cn.zup.bis.entity.model.Dataset">

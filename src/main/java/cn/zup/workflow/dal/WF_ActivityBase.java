@@ -19,6 +19,7 @@ import cn.zup.workflow.model.WF_ACTIVITY;
 /// 数据访问类WF_ActivityBase
 /// </summary>
 @Repository
+
 public class WF_ActivityBase{
 	@Autowired
 	private JdbcTemplate jdbcTemplate_workflow;

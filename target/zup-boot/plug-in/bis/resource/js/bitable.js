@@ -168,6 +168,8 @@ function fireTableScroll(id){
 		//$("#T"+id+" #d_rowDims").scrollTop(top);
 		var left = $(this).scrollLeft();
 		$("#T"+id+" #d_colDims table").css("margin-left", "-"+left+"px");
+
+
 	});
 	var comp = findCompById(id);
 	var rowLvl = comp.rows?comp.rows.length:1;

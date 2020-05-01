@@ -50,7 +50,7 @@ public class CubeService {
 		String cfg = dsetMapper.getDatasetCfg(cube.getDsetId());
 		JSONObject dset = JSONObject.fromObject(cfg);
 		ret.put("cols", dset.get("cols"));
-		ret.put("dynamic", dset.get("dynamic"));
+//		ret.put("dynamic", dset.get("dynamic"));
 		//查询维度
 		ret.put("dims", mapper.getCubeDims(cubeId));
 		//查询度量
@@ -70,7 +70,7 @@ public class CubeService {
 			System.err.println("开始插入3");
 
 			this.insertDim(cube);
-			this.insertDimRela(cube);
+			this.insertDimRela(cube);//cubcolmeta更新的话 都是先删除再 insert
 			this.insertKpi(cube);
 			this.insertKpiRela(cube);
 			ret.setResult(RequestStatus.SUCCESS.getStatus());
@@ -215,7 +215,7 @@ public class CubeService {
 				groupkeys.add(groupId);
 			}
 			
-			dim.setDimId(dimId);
+			dim.setDimId(dimId);//为了插入meata用
 		}
 	}
 	
@@ -255,14 +255,15 @@ public class CubeService {
 			Measure kpi = kpis.get(i);
 			kpi.setColId(kpi.getKpiId());
 			kpi.setOrd(i);
-			//如果指标不是计算指标，直接拼接，计算指标直接取公式
-			int calcKpi = kpi.getCalcKpi();  //新增度量那创建的计算指标
-			//int calc = kpi.getCalc();  //数据集创建的动态字段
-			if(calcKpi == 0){
-				kpi.setCol(kpi.getAggreCol());
-			}else{
-				kpi.setCol(kpi.getCol());
-			}
+//			//如果指标不是计算指标，直接拼接，计算指标直接取公式
+//			int calcKpi = kpi.getCalcKpi();  //新增度量那创建的计算指标
+//			//int calc = kpi.getCalc();  //数据集创建的动态字段
+//			if(calcKpi == 0){
+//				kpi.setCol(kpi.getAggreCol());
+//			}else{
+//				kpi.setCol(kpi.getCol());
+//			}
+			kpi.setCol(kpi.getAggreCol());
 			kpi.setColType(2);
 			metaMapper.insertMeta(kpi);
 		}
@@ -283,7 +284,7 @@ public class CubeService {
 			Map<String, Object> wdnode = new HashMap<String, Object>();
 			wdnode.put("id", "wd");
 			wdnode.put("text", "维度");
-			wdnode.put("state", "open");
+
 			wdnode.put("iconCls", "icon-dim2");
 			List<Map<String, Object>> wdnodeChild = new ArrayList<Map<String, Object>>();
 			wdnode.put("children", wdnodeChild);
@@ -293,7 +294,7 @@ public class CubeService {
 			Map<String, Object> zbnode = new HashMap<String, Object>();
 			zbnode.put("id", "zb");
 			zbnode.put("text", "度量");
-			zbnode.put("state", "open");
+
 			zbnode.put("iconCls", "icon-kpigroup");
 			List<Map<String, Object>> zbnodeChild = new ArrayList<Map<String, Object>>();
 			zbnode.put("children", zbnodeChild);
@@ -307,18 +308,18 @@ public class CubeService {
 			for(int j=0; j<children.size(); j++){
 				Map<String, Object> child = (Map<String, Object>)children.get(j);
 				Integer col_type = new Integer(child.get("col_type").toString());
-				String grouptype = (String)child.get("grouptype");
+				String grouptype = (String)child.get("grouptype");//找到分组id
 				if(grouptype == null || grouptype.length() == 0){
 					grouptype = null;
 				}
-				String groupname = (String)child.get("groupname");
+				String groupname = (String)child.get("groupname");//找到分组name
 				if(grouptype != null && grouptype.length() > 0){
-					if(curGroup == null || !curGroup.get("id").equals(grouptype)){
+					if(curGroup == null || !curGroup.get("id").equals(grouptype)){//建立第一个分组 或者该节点不属于之前建立的分组，需要新建
 						//添加分组节点
 						Map<String, Object> fz = new HashMap<String, Object>();
 						fz.put("id", grouptype);
 						fz.put("text", groupname);
-						fz.put("state", "open");
+
 						fz.put("iconCls", "icon-dim");
 						fz.put("children", new ArrayList());
 						//给分组添加attributes (把分组的第一个节点信息传递给他,拖拽分组时就当拖拽第一个节点)
@@ -332,20 +333,20 @@ public class CubeService {
 						attr.put("dsid", child.get("dsid"));
 						attr.put("alias", child.get("alias"));
 						attr.put("dim_type", child.get("dim_type"));
-						attr.put("tableName", child.get("tableName") == null ? "" : child.get("tableName"));
-						attr.put("tableColKey", child.get("tableColKey") == null ? "" : child.get("tableColKey"));
-						attr.put("tableColName", child.get("tableColName") == null ? "" : child.get("tableColName"));
-						attr.put("ordcol", child.get("ordcol") == null ? "" : child.get("ordcol"));
-						attr.put("dateformat", child.get("dateformat") == null ? "" : child.get("dateformat"));
+//						attr.put("tableName", child.get("tableName") == null ? "" : child.get("tableName"));
+//						attr.put("tableColKey", child.get("tableColKey") == null ? "" : child.get("tableColKey"));
+//						attr.put("tableColName", child.get("tableColName") == null ? "" : child.get("tableColName"));
+//						attr.put("ordcol", child.get("ordcol") == null ? "" : child.get("ordcol"));
+//						attr.put("dateformat", child.get("dateformat") == null ? "" : child.get("dateformat"));
 						attr.put("tname", child.get("tname"));
-						attr.put("calc", child.get("calc"));
-						if(curGroup == null){
-							attr.put("iscas", "");
-						}else{
-							attr.put("iscas", "y");
-						}
-						attr.put("dimord", child.get("dimord") == null ? "" : child.get("dimord"));
-						attr.put("grouptype", grouptype);
+//						attr.put("calc", child.get("calc"));
+//						if(curGroup == null){
+//							attr.put("iscas", "");
+//						}else{
+//							attr.put("iscas", "y");
+//						}
+//						attr.put("dimord", child.get("dimord") == null ? "" : child.get("dimord"));
+						attr.put("grouptype", grouptype);//Group id
 						attr.put("valType", child.get("valType"));
 						wdnodeChild.add(fz);
 						curGroup = fz;
@@ -363,27 +364,27 @@ public class CubeService {
 				attr.put("dsetId", child.get("dsetId"));
 				attr.put("dsid", child.get("dsid"));
 				attr.put("alias", child.get("alias"));
-				attr.put("fmt", child.get("fmt") == null ? "" : child.get("fmt"));
+//				attr.put("fmt", child.get("fmt") == null ? "" : child.get("fmt"));
 				attr.put("aggre", child.get("aggre"));
 				attr.put("dim_type", child.get("dim_type"));
-				attr.put("tableName", child.get("tableName") == null ? "" : child.get("tableName"));
-				attr.put("tableColKey", child.get("tableColKey") == null ? "" : child.get("tableColKey"));
-				attr.put("tableColName", child.get("tableColName") == null ? "" : child.get("tableColName"));
-				attr.put("dateformat", child.get("dateformat") == null ? "" : child.get("dateformat"));
+//				attr.put("tableName", child.get("tableName") == null ? "" : child.get("tableName"));
+//				attr.put("tableColKey", child.get("tableColKey") == null ? "" : child.get("tableColKey"));
+//				attr.put("tableColName", child.get("tableColName") == null ? "" : child.get("tableColName"));
+//				attr.put("dateformat", child.get("dateformat") == null ? "" : child.get("dateformat"));
 				attr.put("tname", child.get("tname"));
-				attr.put("calc", child.get("calc"));
-				if(curGroup == null){
-					attr.put("iscas", "");
-				}else{
-					attr.put("iscas", "y");
-				}
-				attr.put("dimord", child.get("dimord") == null ? "" : child.get("dimord"));
-				attr.put("rate", child.get("rate"));
+//				attr.put("calc", child.get("calc"));
+//				if(curGroup == null){
+//					attr.put("iscas", "");
+//				}else{
+//					attr.put("iscas", "y");
+//				}
+//				attr.put("dimord", child.get("dimord") == null ? "" : child.get("dimord"));
+//				attr.put("rate", child.get("rate"));
 				attr.put("unit", child.get("unit") == null ? "" : child.get("unit"));
 				attr.put("grouptype", grouptype);
-				attr.put("calc_kpi", child.get("calc_kpi"));
+//				attr.put("calc_kpi", child.get("calc_kpi"));
 				attr.put("valType", child.get("valType"));
-				attr.put("ordcol", child.get("ordcol") == null ? "" : child.get("ordcol"));
+//				attr.put("ordcol", child.get("ordcol") == null ? "" : child.get("ordcol"));
 				//设置节点图标
 				if(col_type == 1){
 					if(grouptype == null || grouptype.length() == 0){
@@ -397,7 +398,7 @@ public class CubeService {
 				if(col_type == 1){
 					if(curGroup == null){
 						wdnodeChild.add(child);
-					}else{
+					}else{//分组
 						((List)curGroup.get("children")).add(child);
 					}
 				}else{
@@ -407,5 +408,9 @@ public class CubeService {
 		}
 		System.err.println(ls);
 		return ls;
+	}
+
+	public List<Map<String, Object>> listDims(Integer cubeId){
+		return mapper.listDims(cubeId);
 	}
 }

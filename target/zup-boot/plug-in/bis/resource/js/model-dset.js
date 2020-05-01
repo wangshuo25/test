@@ -3,51 +3,124 @@
 }
 var dataType = ["String", "Int", "Double", "Date", "Datetime"];
 function initdsetTable(){
-    if($("#dsettable").size() > 0){
-	$("#dsettable").datagrid("load", {t:Math.random()});
-	return;
-    }
-    var ctx = "<table id=\"dsettable\" title=\"数据集管理\" ><thead><tr><th data-options=\"field:'ck',checkbox:true\"></th><th data-options=\"field:'name',width:120\">名称</th><th data-options=\"field:'priTable',width:200,align:'left'\">主表</th><th data-options=\"field:'dsname',width:120,align:'center'\">数据源</th><th data-options=\"field:'useType',width:120,align:'center'\">连接</th></tr></thead></table>";
-    $("#optarea").html(ctx);
-    $("#dsettable").datagrid({
-	singleSelect:true,
-	collapsible:false,
-	pagination:false,
-	border:false,
-	fit:true,
-	url:'rest/bis/DatasetController/listDataset',
-	toolbar:[{
-	  text:'新增',
-	  iconCls:'icon-add',
-	  handler:function(){
-	    newdset(false);
-	  }
-	},{
-	  text:'修改',
-	  iconCls:'icon-edit',
-	  handler:function(){
-		var row = $("#dsettable").datagrid("getChecked");
-		if(row == null || row.length == 0){
-			$.messager.alert("出错了。","您还未勾选数据。", "error");
-			return;
-		}
-		 newdset(true, row[0].dsetId);
-	  }
-	},{
-	  text:'删除',
-	  iconCls:'icon-cancel',
-	  handler:function(){
-		var row = $("#dsettable").datagrid("getChecked");
-		if(row == null || row.length == 0){
-			$.messager.alert("出错了。","您还未勾选数据。", "error");
-			return;
-		}
-		delDset(row[0].dsetId);
-	  }
-	}]
-    });
+	if($("#dsettable").size() > 0){
+		$("#dsettable").datagrid("load", {t:Math.random()});
+		return;
+	}
+	var ctx = "<table id=\"dsettable\" title=\"数据集管理\" ></table>";
+	$("#optarea").html(ctx);
+
+
+	$("#dsettable").datagrid({
+		singleSelect: true,
+		rownumbers: true,
+		resizable: false,
+		fixed: true,
+		nowrap: true,
+		striped: true, //条纹
+		fit:true,
+		pagination:true,//分页
+		rownumbers: true,
+		width:1400,
+		height:500,
+		url:'rest/bis/DatasetController/listDataset',
+		toolbar:[{
+			text:'新增',
+			iconCls:'icon-add2',
+			handler:function(){
+				newdset(false);
+			}
+		}],
+		columns:[[
+			{field:'name',title:'数据集名称',width:400,align:'center'},
+			{field:'priTable',title:'主表',width:300,align:'center'},
+			{field:'dsname',title:'数据源',width:250,align:'center'},
+			{field:'useType',title:'连接方式',width:180,align:'center'},
+			{field:'cfg',title:'cfg',width:180,align:'center',hidden:'true'},
+			{field:'action',title:'操作',width:400,align:'center',
+				formatter:function(value,row,index) {
+
+					return "<button href='javascript:void(0)' onclick='delDset(&apos;" + index+ "&apos;)'><img src='plug-in/bis/resource/jquery-easyui-1.4.4/themes/icons/no.png' >删除</button><button href='javascript:void(0)' style='margin-left:10px;' onclick='newdset(&apos;" + true+ " &apos;,&apos;" + index+ "&apos;)'><img src='plug-in/bis/resource/jquery-easyui-1.4.4/themes/icons/pencil.png' >编辑</button>";
+				}
+			}
+
+		]],
+		view: detailview,
+		detailFormatter: function(rowIndex, rowData){
+            return '<table class="datagrid" style="height: 500px;margin-left: 100px;border:black 1px solid;text-align: center" id="ddv-' + rowIndex + '"></table>';
+
+		},
+        onExpandRow:function(index,row) {
+
+            var transform = {};
+            var rows= $("#dsettable").datagrid("getRows");
+            var dsetId=rows[index].dsetId;
+            $.ajax({
+                type: "POST",
+                async:false,
+                url: "rest/bis/DatasetController/getDatasetCfg",
+                dataType:"json",
+                data: {"dsetId": dsetId},
+                success: function(resp){
+                    transform = resp;
+                }
+            });
+            var str='<tr style="height: 5px;background-color: #438eb9;;color: white"><td colspan="3" style="text-align: center">数据集的字段信息</td></tr><tr style="height: 5px;background: #eeeeee"><td width="200px" >字段名</td><td  width="200px">字段属性</td><td  width="200px">来源表</td></tr>';
+            for(var i=0; i<transform.cols.length; i++){
+                m = transform.cols[i];
+                str = str + "<tr style=\"height: 5px\"><td>"+m.name+"</td><td><div>"+m.type+"</div></td><td>"+m.tname+"</td><td></td></tr>";
+            }
+            $('#ddv-'+index).html(str);
+
+		},
+
+
+
+
+	});
+	//
+	// $("#dsettable").datagrid({
+	// singleSelect:true,
+	// collapsible:false,
+	// pagination:false,
+	// border:false,
+	// fit:true,
+	// url:'rest/bis/DatasetController/listDataset',
+	// toolbar:[{
+	//   text:'新增',
+	//   iconCls:'icon-add',
+	//   handler:function(){
+	//     newdset(false);
+	//   }
+	// },{
+	//   text:'修改',
+	//   iconCls:'icon-edit',
+	//   handler:function(){
+	// 	var row = $("#dsettable").datagrid("getChecked");
+	// 	if(row == null || row.length == 0){
+	// 		$.messager.alert("出错了。","您还未勾选数据。", "error");
+	// 		return;
+	// 	}
+	// 	 newdset(true, row[0].dsetId);
+	//   }
+	// },{
+	//   text:'删除',
+	//   iconCls:'icon-cancel',
+	//   handler:function(){
+	// 	var row = $("#dsettable").datagrid("getChecked");
+	// 	if(row == null || row.length == 0){
+	// 		$.messager.alert("出错了。","您还未勾选数据。", "error");
+	// 		return;
+	// 	}
+	// 	delDset(row[0].dsetId);
+	//   }
+	// }]
+	// });
+
 }
-function delDset(dsetId){
+function delDset(a){
+	var rows= $("#dsettable").datagrid("getRows");
+	var dsetId=rows[a].dsetId;
 	if(confirm("是否确认删除？")){
 		$.ajax({
 			url:'rest/bis/DatasetController/deleteDset',
@@ -62,12 +135,15 @@ function delDset(dsetId){
 			}
 		});
 	}
+
 }
-function newdset(isupdate, dsetId){
+function newdset(isupdate, a){
 	var transform = {};
 	var treeStr = "";
 	var tables = "";
 	if(isupdate){
+		var rows= $("#dsettable").datagrid("getRows");
+		var dsetId=rows[a].dsetId;
 		$.ajax({
 		   type: "POST",
 		   async:false,
@@ -90,6 +166,8 @@ function newdset(isupdate, dsetId){
 				continue;
 			}
 		}
+		// alert(treeStr);//<li data-options="id:'test_dm_logs',iconCls:'icon-table'"><span>test_dm_logs</span></li><li data-options="id:'code_area',iconCls:'icon-table'"><span>code_area</span></li>
+		// alert(tables);//<option value="test_dm_logs" selected>test_dm_logs</option>
 		
 	}
 	//数据源列表
@@ -107,7 +185,9 @@ function newdset(isupdate, dsetId){
 		   }
 		}
 	});
-	var ctx = "<div id=\"crtdataset\"><div title=\"基本信息\"><div class=\"textpanel\"><span class=\"inputtext\">数据集名称：</span><input type=\"text\" id=\"name\" name=\"name\" value=\""+(transform.name?transform.name:"")+"\" class=\"inputform\"><br/><span class=\"inputtext\">数据源：</span><select id=\"dsid\" class=\"inputform\">"+dsls+"</select><br/><span class=\"inputtext\" style=\"width:120px;\">选择表：</span><br/><div class=\"tablesleft\"><div class=\"tabletitle\">待选表</div><div style='line-height: 20px;'><input id=\"tablesearch\" style=\"width:100%;\"></input></div><ul id=\"allTablesTree\" style=\"height:240px; width:100%; overflow:auto\"></ul></div><div class=\"tablescenter\"><input id=\"left2right\" type=\"button\" style=\"margin-top:120px;\" value=\">\" title=\"选择\" class=\"btn btn-primary btn-sm\"><br/><br/><input type=\"button\" id=\"right2left\"  value=\"<\" title=\"移除\" class=\"btn btn-primary btn-sm\"></div><div class=\"tablesright\"><div class=\"tabletitle\">已选表</div><ul id=\"selTablesTree\" class=\"easyui-tree\" style=\"height:270px; width:100%; overflow:auto\">"+treeStr+"</ul></div></div></div><div title=\"表关联\"><div class=\"textpanel\"><div style=\"float:right\"><input type=\"button\" id=\"jointable\" value=\"关联\" class=\"btn btn-primary btn-xs\"> <br/> <input type=\"button\" id=\"unjointable\" value=\"取消\" class=\"btn btn-primary btn-xs\"></div><span class=\"inputtext\">主表： </span><select id=\"mastertable\" class=\"inputform\" style=\"width:300px;\" "+(isupdate?"disabled":"")+">"+tables+"</select>"+(isupdate?"<font color='#999'>(禁止更改)</font>":"")+"<br/><ul class=\"easyui-tree\" id=\"masterTableTree\" style=\"margin-left:100px;border:1px solid #999; width:300px; height:320px; overflow:auto\"></ul></div></div>"+(isupdate?"<div title=\"表字段\"></div>":"")+"</div>";
+
+
+	var ctx = "<div id=\"crtdataset\"><div title=\"基本信息\"><div class=\"textpanel\"><span class=\"inputtext\">数据集名称：</span><input type=\"text\" id=\"name\" name=\"name\" value=\""+(transform.name?transform.name:"")+"\" class=\"inputform\"><br/><span class=\"inputtext\">数据源：</span><select id=\"dsid\" class=\"inputform\">"+dsls+"</select><br/><span class=\"inputtext\" style=\"width:120px;\">选择表：</span><br/><div class=\"tablesleft\"><div class=\"tabletitle\">待选表</div><ul id=\"allTablesTree\" style=\"height:240px; width:100%; overflow:auto\"></ul></div><div class=\"tablescenter\"><input id=\"left2right\" type=\"button\" style=\"margin-top:120px;\" value=\">\" title=\"选择\" class=\"\"><br/><br/><input type=\"button\" id=\"right2left\"  value=\"<\" title=\"移除\"></div><div class=\"tablesright\"><div class=\"tabletitle\">已选表</div><ul id=\"selTablesTree\" class=\"easyui-tree\" style=\"height:270px; width:100%; overflow:auto\">"+treeStr+"</ul></div></div></div><div title=\"表关联\"><div class=\"textpanel\"><div style=\"float:right\"><input type=\"button\" id=\"jointable\" value=\"关联\" style='margin-left: 10px'> <br/> <input type=\"button\" id=\"unjointable\" value=\"解除\" style='margin-left: 10px;margin-top:5px'></div><span class=\"inputtext\">主表： </span><select id=\"mastertable\" class=\"inputform\" style=\"width:300px;\" "+(isupdate?"disabled":"")+">"+tables+"</select>"+(isupdate?"<font color='#999'>(禁止更改)</font>":"")+"<br/><ul class=\"easyui-tree\" id=\"masterTableTree\" style=\"margin-left:100px;border:1px solid #999; width:300px; height:320px; overflow:auto\"></ul></div></div></div>";
 	$('#pdailog').dialog({
 		title: isupdate?'编辑数据集':'创建数据集',
 		width: 700,
@@ -138,17 +218,17 @@ function newdset(isupdate, dsetId){
 				}
 				//判断是否关联
 				if(cld.length > 1 && (!transform.joininfo || transform.joininfo.length != cld.length - 1)){
-					msginfo("请建立表关联。");
+					msginfo("未建立关联表或关联过多");
 					$("#pdailog #crtdataset").tabs("select", 1);
 					return;
 				}
 				
-				transform.name = name;
-				transform.dsid = $("#pdailog #dsid").val();
+				transform.name = name;//数据集的名字
+				transform.dsid = $("#pdailog #dsid").val();//数据源的id
 				transform.dsetId = isupdate?transform.dsetId:newGuid();
-				
-				//新增需要获取字段
+				//新增则需要，查询出选择的标的所有字段，存到transform.cols中
 				if(!isupdate){
+
 					$.ajax({
 						type:'post',
 						async: false,
@@ -159,26 +239,24 @@ function newdset(isupdate, dsetId){
 							transform.cols = dt;
 						}
 					});
+
 				}
-				
-				__showLoading();
 				$.ajax({
-				   type: "POST",
-				   async:false,
-				   url: isupdate?"rest/bis/DatasetController/updateDset":"rest/bis/DatasetController/saveDset",
-				   dataType:"HTML",
-				   data: {cfg:JSON.stringify(transform), priTable: transform.master, name:transform.name,dsid:transform.dsid, dsetId:transform.dsetId},
-				   success: function(resp){
-					   __hideLoading();
-					   $('#pdailog').dialog('close');
-					   $("#dsettable").datagrid("reload", {t:Math.random});
-				   },
-				   error:function(er){
-					   msginfo("系统出错，请查看后台日志。");
-					   __hideLoading();
-				   }
+					type: "POST",
+					async:false,
+					url: isupdate?"rest/bis/DatasetController/updateDset":"rest/bis/DatasetController/saveDset",
+					dataType:"HTML",
+					data: {cfg:JSON.stringify(transform), priTable: transform.master, name:transform.name,dsid:transform.dsid, dsetId:transform.dsetId},
+					success: function(resp){
+						__hideLoading();
+						$('#pdailog').dialog('close');
+						$("#dsettable").datagrid("reload", {t:Math.random});
+					},
+					error:function(er){
+						msginfo("系统出错，请查看后台日志。");
+						__hideLoading();
+					}
 				});
-				
 			}
 		},{
 			text:'取消',
@@ -190,28 +268,11 @@ function newdset(isupdate, dsetId){
 	});
 	//加载tabs
 	$("#pdailog #crtdataset").tabs({fit:true,border:false,tabPosition:'left',onSelect:function(a, b){
-			if(b == 3){
-				reloadDynamicCol(transform);
-			}else if(b == 2){ //加载表字段
-				var pp = $('#pdailog #crtdataset').tabs('getSelected');
-				var str = "<table class=\"grid3\" id=\"T_report54\" cellpadding=\"0\" cellspacing=\"0\">";
-				str = str + "<tr><th width='20%'>字段名</th><th width='17%'>显示名</th><th width='13%'>类型</th><th width='30%'>来源表</th><th width='10%'>操作</th></tr>";
-				for(var i=0; i<transform.cols.length; i++){
-					m = transform.cols[i];
-					str = str + "<tr><td class='kpiData1 grid3-td'>"+m.name+"</td><td class='kpiData1 grid3-td'><div id=\""+m.tname+"_"+m.name+"_disp\">"+(m.dispName == '' ? "&nbsp;":m.dispName)+"</div></td><td class='kpiData1 grid3-td'><div id=\""+m.tname+"_"+m.name+"_tp\">"+m.type+"</div></td><td class='kpiData1 grid3-td'>"+m.tname+"</td><td class='kpiData1 grid3-td'><button class=\"btn btn-info btn-xs\" cname='"+m.name+"' tname='"+m.tname+"' >编辑</buttton></td></tr>";
-				}
-				str = str + "</table>";
-				$(pp).html(str);
-				$("#crtdataset table.grid3 td button").click(function(){
-					var name = $(this).attr("cname");
-					var tname = $(this).attr("tname");
-					editDsColumn(name, transform, tname);
-				});
-			}
+
 		}
 	});
 
-	//加载目标表
+	//加载目标表  给allTablesTree显示
 	var initTablesFunc = function(dsid){
 		//加载表列表树
 		$.ajax({
@@ -248,10 +309,10 @@ function newdset(isupdate, dsetId){
 		$("#selTablesTree").tree("append", {parent:null, data:[{id:node.id, text:node.text, iconCls:node.iconCls}]});
 		$(node.target).attr("hide", "y").hide();
 		if(isupdate){
-			//添加字段
+			//如果是更新的话 则给cols添加新的表的字段
 			$.ajax({
 				type:'GET',
-				url:'rest/bis/DatasetController/listTableColumns',
+				url:'rest/bis/DatasetController/listTableColumns',//获取表的字段
 				dataType:'json',
 				data:{tname:node.id, dsid:$("#pdailog #dsid").val()},
 				success: function(dt){
@@ -266,8 +327,8 @@ function newdset(isupdate, dsetId){
 			//更新主表select的数据
 			var sel = document.getElementById("mastertable");
 			var sidx = sel.selectedIndex;
-			sel.options.add(new Option(node.text, node.id));
-			if(sidx == -1){  //说明是从无到有，更新表字段
+			sel.options.add(new Option(node.text, node.id));//新增选择的表
+			if(sidx == -1){  //说明还没有主表，是第一次选表，要是不等于-1说明是第2次选表，主表不变
 				updateColsFunc(node.text);
 				//并且设置为主表
 				transform.master = node.id;
@@ -299,12 +360,12 @@ function newdset(isupdate, dsetId){
 			var idx = 0;
 			for(i=0; i<sel.options.length; i++){
 				if(sel.options[i].value == node.id){
-					idx = i;
+					idx = i;//找出select框中要剔除的
 					break;
 				}
 			}
 			sel.options.remove(idx);
-			if(sidx == idx){ //如果删除那个字段刚好是选择的字段，更新表字段
+			if(sidx == idx){ //如果删除的表 刚好是主表，则更新关联的界面
 				updateColsFunc(sel.options[sel.selectedIndex].value);
 				transform.master = sel.options[sel.selectedIndex].value;
 			}
@@ -317,7 +378,7 @@ function newdset(isupdate, dsetId){
 					ret.push(t);
 				}
 			}
-			transform.cols = ret;
+			transform.cols = ret;//更新cols
 			//移除关联
 			var idx = -1;
 			for(j=0; j<transform.joininfo.length; j++){
@@ -330,6 +391,9 @@ function newdset(isupdate, dsetId){
 			}
 		}
 	});
+
+
+
 	//表关联 -- 取消关联按钮
 	$("#unjointable").bind("click", function(){
 		var node = $("#masterTableTree").tree("getSelected");
@@ -349,11 +413,16 @@ function newdset(isupdate, dsetId){
 		}
 		transform.joininfo.splice(idx, 1);
 	});
+
+
 	//表关联 -- 关联按钮
 	$("#pdailog #jointable").click(function(){
 		jointableFunc(transform);
 	});
-	//更新表关联表的字段
+
+
+
+	//更新表关联表界面的字段
 	var updateColsFunc = function(tname){
 		$.ajax({
 			type:'post',
@@ -368,8 +437,8 @@ function newdset(isupdate, dsetId){
 						var joininfo = findJoinInfoById(transform, dt[k].name);
 						if(joininfo != null){
 							obj.iconCls = "icon-coljoin";
-							obj.attributes.ref = joininfo.ref;
-							obj.attributes.refKey = joininfo.refKey;
+							obj.attributes.ref = joininfo.ref;//关联表
+							obj.attributes.refKey = joininfo.refKey;//关联表的id
 							obj.text = dt[k].name + " -> " + joininfo.ref + "." + joininfo.refKey;
 						}
 					}
@@ -384,6 +453,8 @@ function newdset(isupdate, dsetId){
 			}
 		});
 	}
+
+
 	$("#mastertable").bind("change", function(){
 		updateColsFunc($(this).val());
 		transform.master = $(this).val(); //并且把选择表设置为主表
@@ -394,69 +465,74 @@ function newdset(isupdate, dsetId){
 	}
 	
 }
-function editDsColumn(colId, dset, tname){
-	if($("#dsColumn_div").size() == 0){
-		$("<div id=\"dsColumn_div\" class=\"easyui-menu\"></div>").appendTo("body");
-	}
-	var tmp = null;
-	for(var i=0; i<dset.cols.length; i++){
-		if(dset.cols[i].name == colId && dset.cols[i].tname == tname){
-			tmp = dset.cols[i];
-			break;
-		}
-	}
-	var tps = "";
-	for(var i=0; i<dataType.length; i++){
-		tps = tps + "<option value=\""+dataType[i]+"\" "+(tmp.type == dataType[i] ? "selected" : "")+">"+dataType[i]+"</option>";
-	}
-	var joinInfo = null;
-	//查询表字段关联信息
-	for(j=0; dset.joininfo && j<dset.joininfo.length; j++){
-		//是主表，字段相同
-		if( dset.master==tmp.tname && dset.joininfo[j].col == tmp.name){
-			joinInfo = dset.joininfo[j];
-			break;
-		}else
-		if(tmp.tname == dset.joininfo[j].ref && tmp.name == dset.joininfo[j].refKey ){
-			joinInfo =  dset.joininfo[j];
-			break;
-		}
-	}
-	var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">字段名：</span>"+tmp.name+"<br/><span class=\"inputtext\">显示名：</span><input type=\"text\" name=\"coldispname\" id=\"coldispname\" value=\""+tmp.dispName+"\" class=\"inputform2\"><br/><span class=\"inputtext\">类型：</span><select id=\"coltype\" class=\"inputform2\">"+tps+"</select><br/><span class=\"inputtext\">来源表：</span>"+tmp.tname+"<br/><span class=\"inputtext\">字段关联：</span>"+(joinInfo==null?"字段无关联":dset.master+"."+joinInfo.col+" -> " + joinInfo.ref+"."+joinInfo.refKey)+(joinInfo!=null?"<br/><span class=\"inputtext\">关联类型：</span>"+(joinInfo.jtype=="all"?"全连接":(joinInfo.jtype=="left"?"左连接":"右连接")):"")+(joinInfo==null?"":"<br/><span class=\"inputtext\">强制连接：</span>"+(joinInfo.force=="y"?"是":"否"))+"</div>";
-	$('#dsColumn_div').dialog({
-		title: '编辑字段信息',
-		width: joinInfo == null ? 350 : 450,
-		height: joinInfo == null ? 240:300,
-		closed: false,
-		cache: false,
-		modal: true,
-		toolbar:null,
-		content:ctx,
-		onLoad:function(){},
-		onClose:function(){
-			$('#dsColumn_div').dialog('destroy');
-		},
-		buttons:[{
-				text:'确定',
-				iconCls:"icon-ok",
-				handler:function(){
-					tmp.dispName = $("#dsColumn_div #coldispname").val();
-					tmp.type = $("#dsColumn_div #coltype").val();
-					tmp.isupdate = 'y';
-					//回写值
-					$("#crtdataset #"+tmp.tname+"_"+tmp.name+"_disp").text(tmp.dispName);
-					$("#crtdataset #"+tmp.tname+"_"+tmp.name+"_tp").text(tmp.type);
-					$('#dsColumn_div').dialog('close');
-				}
-			},{
-				text:'取消',
-				iconCls:"icon-cancel",
-				handler:function(){
-					$('#dsColumn_div').dialog('close');
-				}
-			}]
-	});
-}
+
+
+
+//
+//
+// function editDsColumn(colId, dset, tname){
+// 	if($("#dsColumn_div").size() == 0){
+// 		$("<div id=\"dsColumn_div\" class=\"easyui-menu\"></div>").appendTo("body");
+// 	}
+// 	var tmp = null;
+// 	for(var i=0; i<dset.cols.length; i++){
+// 		if(dset.cols[i].name == colId && dset.cols[i].tname == tname){
+// 			tmp = dset.cols[i];
+// 			break;
+// 		}
+// 	}
+// 	var tps = "";
+// 	for(var i=0; i<dataType.length; i++){
+// 		tps = tps + "<option value=\""+dataType[i]+"\" "+(tmp.type == dataType[i] ? "selected" : "")+">"+dataType[i]+"</option>";
+// 	}
+// 	var joinInfo = null;
+// 	//查询表字段关联信息
+// 	for(j=0; dset.joininfo && j<dset.joininfo.length; j++){
+// 		//是主表，字段相同
+// 		if( dset.master==tmp.tname && dset.joininfo[j].col == tmp.name){
+// 			joinInfo = dset.joininfo[j];
+// 			break;
+// 		}else
+// 		if(tmp.tname == dset.joininfo[j].ref && tmp.name == dset.joininfo[j].refKey ){
+// 			joinInfo =  dset.joininfo[j];
+// 			break;
+// 		}
+// 	}
+// 	var ctx = "<div class=\"textpanel\"><span class=\"inputtext\">字段名：</span>"+tmp.name+"<br/><span class=\"inputtext\">显示名：</span><input type=\"text\" name=\"coldispname\" id=\"coldispname\" value=\""+tmp.dispName+"\" class=\"inputform2\"><br/><span class=\"inputtext\">类型：</span><select id=\"coltype\" class=\"inputform2\">"+tps+"</select><br/><span class=\"inputtext\">来源表：</span>"+tmp.tname+"<br/><span class=\"inputtext\">字段关联：</span>"+(joinInfo==null?"字段无关联":dset.master+"."+joinInfo.col+" -> " + joinInfo.ref+"."+joinInfo.refKey)+(joinInfo!=null?"<br/><span class=\"inputtext\">关联类型：</span>"+(joinInfo.jtype=="all"?"全连接":(joinInfo.jtype=="left"?"左连接":"右连接")):"")+(joinInfo==null?"":"<br/><span class=\"inputtext\">强制连接：</span>"+(joinInfo.force=="y"?"是":"否"))+"</div>";
+// 	$('#dsColumn_div').dialog({
+// 		title: '编辑字段信息',
+// 		width: joinInfo == null ? 350 : 450,
+// 		height: joinInfo == null ? 240:300,
+// 		closed: false,
+// 		cache: false,
+// 		modal: true,
+// 		toolbar:null,
+// 		content:ctx,
+// 		onLoad:function(){},
+// 		onClose:function(){
+// 			$('#dsColumn_div').dialog('destroy');
+// 		},
+// 		buttons:[{
+// 				text:'确定',
+// 				iconCls:"icon-ok",
+// 				handler:function(){
+// 					tmp.dispName = $("#dsColumn_div #coldispname").val();
+// 					tmp.type = $("#dsColumn_div #coltype").val();
+// 					tmp.isupdate = 'y';//更新标记 立方体的维度跟着一起更新
+// 					//回写值
+// 					$("#crtdataset #"+tmp.tname+"_"+tmp.name+"_disp").text(tmp.dispName);
+// 					$("#crtdataset #"+tmp.tname+"_"+tmp.name+"_tp").text(tmp.type);
+// 					$('#dsColumn_div').dialog('close');
+// 				}
+// 			},{
+// 				text:'取消',
+// 				iconCls:"icon-cancel",
+// 				handler:function(){
+// 					$('#dsColumn_div').dialog('close');
+// 				}
+// 			}]
+// 	});
+// }
 
 function jointableFunc(transform){
 	var node = $("#masterTableTree").tree("getSelected");
@@ -478,7 +554,7 @@ function jointableFunc(transform){
 	var cld = $("#selTablesTree").tree("getChildren");
 	for(i=0; i<cld.length; i++){
 		if(cld[i].id != $("#mastertable").val()){
-			tbs = tbs + "<option value=\""+cld[i].id+"\" "+(joinInfo&&joinInfo.ref==cld[i].id?"selected":"")+">"+cld[i].text+"</option>";
+			tbs = tbs + "<option value=\""+cld[i].id+"\" "+(joinInfo&&joinInfo.ref==cld[i].id?"selected":"")+">"+cld[i].text+"</option>";//从表
 			if(tname == null){
 				tname = cld[i].id;
 			}
@@ -511,7 +587,6 @@ function jointableFunc(transform){
 		height: 240,
 		closed: false,
 		cache: false,
-		modal: true,
 		toolbar:null,
 		content:ctx,
 		onLoad:function(){},

@@ -1,5 +1,5 @@
 server:
-  port: 8083
+  port: 8082
   tomcat:
     uri-encoding: UTF-8   # 配置Tomcat编码,默认为UTF-8
     max-threads: 1000  # 配置最大线程数

@@ -109,26 +109,24 @@
 }
 .panel-header,
 .panel-body {
-  border-color: #95B8E7;
+  border-color: #438eb9;
 }
 .panel-header {
-  background-color: #E0ECFF;
-  background: -webkit-linear-gradient(top,#EFF5FF 0,#E0ECFF 100%);
-  background: -moz-linear-gradient(top,#EFF5FF 0,#E0ECFF 100%);
-  background: -o-linear-gradient(top,#EFF5FF 0,#E0ECFF 100%);
-  background: linear-gradient(to bottom,#EFF5FF 0,#E0ECFF 100%);
+  background-color: #438eb9;
+  background: -webkit-linear-gradient(top,#438eb9 0,#438eb9 100%);
+  background: -moz-linear-gradient(top,#438eb9 0,#438eb9 100%);
+  background: -o-linear-gradient(top,#438eb9 0,#438eb9 100%);
+  background: linear-gradient(to bottom,#438eb9 0,#438eb9 100%);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#EFF5FF,endColorstr=#E0ECFF,GradientType=0);
 }
 .panel-body {
   background-color: #ffffff;
   color: #000000;
-  font-size: 12px;
+  font-size: 14px;
 }
 .panel-title {
-  font-size: 12px;
-  font-weight: bold;
-  color: #0E2D5F;
+  font-size: 16px;
+  color: #ffffff;
   height: 16px;
   line-height: 16px;
 }
@@ -142,15 +140,15 @@
 }
 .accordion {
   overflow: hidden;
-  border-width: 1px;
+  border-width: 4px;
   border-style: solid;
 }
 .accordion .accordion-header {
-  border-width: 0 0 1px;
+  border-width: 0 0 4px;
   cursor: pointer;
 }
 .accordion .accordion-body {
-  border-width: 0 0 1px;
+  border-width: 0 0 4px;
 }
 .accordion-noborder {
   border-width: 0;
@@ -169,7 +167,7 @@
 }
 .accordion {
   background: #ffffff;
-  border-color: #95B8E7;
+  border-color: #ffdf00;
 }
 .accordion .accordion-header {
   background: #E0ECFF;
@@ -184,7 +182,7 @@
 .window {
   overflow: hidden;
   padding: 5px;
-  border-width: 1px;
+  border-width: 5px;
   border-style: solid;
 }
 .window .window-header {
@@ -252,26 +250,26 @@
 }
 .window,
 .window .window-body {
-  border-color: #95B8E7;
+  border: none;
 }
 .window {
-  background-color: #E0ECFF;
-  background: -webkit-linear-gradient(top,#EFF5FF 0,#E0ECFF 20%);
-  background: -moz-linear-gradient(top,#EFF5FF 0,#E0ECFF 20%);
-  background: -o-linear-gradient(top,#EFF5FF 0,#E0ECFF 20%);
-  background: linear-gradient(to bottom,#EFF5FF 0,#E0ECFF 20%);
+  background-color: #438eb9;
+  background: -webkit-linear-gradient(top, #438eb9 0, #438eb9 20%);
+  background: -moz-linear-gradient(top, #438eb9 0, #438eb9 20%);
+  background: -o-linear-gradient(top, #438eb9 0, #438eb9 20%);
+  background: linear-gradient(to bottom, #438eb9 0, #438eb9 20%);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#EFF5FF,endColorstr=#E0ECFF,GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#438eb9,endColorstr=#438eb9,GradientType=0);
 }
 .window-proxy {
-  border: 1px dashed #95B8E7;
+  border: 1px dashed #438eb9;
 }
 .window-proxy-mask,
 .window-mask {
   background: #ccc;
 }
 .window .panel-footer {
-  border: 1px solid #95B8E7;
+  border: 1px solid #e7381c;
   position: relative;
   top: -1px;
 }
@@ -279,7 +277,7 @@
   overflow: auto;
 }
 .dialog-toolbar {
-  padding: 2px 5px;
+  padding: 14px 14px;
 }
 .dialog-tool-separator {
   float: left;
@@ -289,15 +287,15 @@
   margin: 2px 1px;
 }
 .dialog-button {
-  padding: 5px;
-  text-align: right;
+  padding-right:30px;
+  text-align: center;
 }
 .dialog-button .l-btn {
   margin-left: 5px;
 }
 .dialog-toolbar,
 .dialog-button {
-  background: #F4F4F4;
+  background: #f6fdff;
   border-width: 1px;
   border-style: solid;
 }
@@ -1296,15 +1294,15 @@
   display: none;
 }
 .datagrid-toolbar {
-  height: auto;
-  padding: 1px 2px;
+  height: 30px;
+  padding-top: 5px;
   border-width: 0 0 1px 0;
-  border-style: solid;
+  border-style: dotted;
 }
 .datagrid-btn-separator {
   float: left;
   height: 24px;
-  border-left: 1px solid #ccc;
+  border-left: 1px solid #cc0011;
   border-right: 1px solid #fff;
   margin: 2px 1px;
 }
@@ -1320,7 +1318,7 @@
 .datagrid-header {
   overflow: hidden;
   cursor: default;
-  border-width: 0 0 1px 0;
+  border-width: 5px 0 1px 0;
   border-style: solid;
 }
 .datagrid-header-inner {
@@ -1329,7 +1327,7 @@
 }
 .datagrid-header-row,
 .datagrid-row {
-  height: 25px;
+  height: 40px;
 }
 .datagrid-header td,
 .datagrid-body td,
@@ -1337,6 +1335,8 @@
   border-width: 0 1px 1px 0;
   border-style: dotted;
   margin: 0;
+  height: 40px;
+
   padding: 0;
 }
 .datagrid-cell,
@@ -1466,7 +1466,7 @@
 }
 .datagrid-header,
 .datagrid-td-rownumber {
-  background-color: #efefef;
+  background-color: #438eb9;
   background: -webkit-linear-gradient(top,#F9F9F9 0,#efefef 100%);
   background: -moz-linear-gradient(top,#F9F9F9 0,#efefef 100%);
   background: -o-linear-gradient(top,#F9F9F9 0,#efefef 100%);
@@ -1481,7 +1481,7 @@
   background: #aac5e7;
 }
 .datagrid-mask {
-  background: #ccc;
+  background: #438eb9;
 }
 .datagrid-mask-msg {
   border-color: #95B8E7;
@@ -1489,6 +1489,7 @@
 .datagrid-toolbar,
 .datagrid-pager {
   background: #F4F4F4;
+  border-color:black;
 }
 .datagrid-header,
 .datagrid-toolbar,
@@ -1499,7 +1500,7 @@
 .datagrid-header td,
 .datagrid-body td,
 .datagrid-footer td {
-  border-color: #ccc;
+  border-color: #000000;
 }
 .datagrid-htable,
 .datagrid-btable,
@@ -1512,7 +1513,7 @@
 }
 .datagrid-row-over,
 .datagrid-header td.datagrid-header-over {
-  background: #eaf2ff;
+  background: #a4ccff;
   color: #000000;
   cursor: default;
 }
@@ -1540,13 +1541,13 @@
   font-weight: bold;
 }
 .propertygrid .datagrid-view1 .datagrid-body td {
-  border-color: #dddddd;
+  border-color: #dd0016;
 }
 .propertygrid .datagrid-view1 .datagrid-group {
   border-color: #E0ECFF;
 }
 .propertygrid .datagrid-view2 .datagrid-group {
-  border-color: #dddddd;
+  border-color: #438eb9;
 }
 .propertygrid .datagrid-group,
 .propertygrid .datagrid-view1 .datagrid-body,
@@ -2867,3 +2868,31 @@
 .switchbutton-readonly {
   cursor: default;
 }
+
+.mytable table {
+
+  border-collapse: collapse;
+  margin: 0 auto;
+  text-align: center;
+
+}
+.mytable table td,
+.mytable table th {
+  border: 1px solid #cad9ea;
+  color: #666;
+  height: 30px;
+}
+.mytable table thead th
+{
+  background-color: #CCE8EB;
+  width: 100px;
+}
+.mytable table tr:nth-child(odd)
+{
+  background: #fff;
+}
+.mytable table tr:nth-child(even)
+{
+  background: #F5FAFA;
+}
+
